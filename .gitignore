@@ -26,3 +26,9 @@
 *.exe
 *.out
 *.app
+
+# Latex Files
+*.pdf
+*.aux
+*.toc
+*.log
