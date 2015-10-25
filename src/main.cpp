@@ -28,13 +28,17 @@ int framerate;
 int main(int argc, char* argv[])
 {
 
-	Mat imgFrame = Mat(4, 4);
+	// Nota: trabaja con aritmetica de desborde. 
+	Mat imgFrame = Mat(3, 3);
 	imgFrame(0,0) = 126;
 	imgFrame(0,1) = 127;
 	imgFrame(0,2) = 128;
 	imgFrame(1,0) = 129;
 	imgFrame(1,1) = 130;
 	imgFrame(1,2) = 131;
+	imgFrame(1,2) += imgFrame(1,2) + 20;
+	imgFrame.Show();
+	imgFrame(0,2) += 128;
 	imgFrame.Show();
 	return 0;
 }

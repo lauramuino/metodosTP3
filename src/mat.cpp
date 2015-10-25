@@ -7,14 +7,14 @@ Mat::Mat(size_t n, size_t m) : rows_(n), cols_(m), data_((n) * (m))
 
 
 
-char& Mat::operator()(size_t i, size_t j)
+unsigned char& Mat::operator()(size_t i, size_t j)
 {
     return data_[i * cols_ + j];
 }
 
 
 
-char Mat::operator()(size_t i, size_t j) const
+unsigned char Mat::operator()(size_t i, size_t j) const
 {
     return data_[i * cols_ + j];
 } 
@@ -85,7 +85,7 @@ void Mat::ShowOctave()
 	cout << "[";
 	for (int j = 0; j < rows_; j++) {
 		for (int k = 0; k < cols_; k++) {
-			cout << thisMat(j,k) << " ";
+			cout << +thisMat(j,k) << " "; // el + es un casteo automatico
 		}
 		cout << ";";
 	}
@@ -99,7 +99,7 @@ void Mat::Show()
 	Mat& thisMat = *this;
 	for (int j = 0; j < rows_; j++) {
 		for (int k = 0; k < cols_; k++) {
-			cout << thisMat(j,k) << " ";
+			cout << +thisMat(j,k) << " "; // el + es un casteo automatico
 		}
 		cout << endl;
 	}

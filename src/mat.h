@@ -15,14 +15,14 @@ class Mat {
 	public:
 	    Mat(size_t rows_, size_t cols_);
 	    Mat(const Mat& anotherMat);
-	    char& operator()(size_t i, size_t j);
-	    char operator()(size_t i, size_t j) const;
+	    unsigned char& operator()(size_t i, size_t j);
+	    unsigned char operator()(size_t i, size_t j) const;
 	    size_t rows() const;
 	    size_t cols() const;
 		void Show();
 		void ShowOctave();
 
-		
+
 	    //vector<double> operator*(const vector<double>& x);
 	    //Mat* operator*(double scalar);
 	    //Mat operator+(const Mat& anotherMat);
@@ -35,7 +35,7 @@ class Mat {
 
 	    size_t rows_;
 	    size_t cols_;
-	    vector<char> data_;
+	    vector<unsigned char> data_;
 	};
  
 
