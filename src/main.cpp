@@ -1,4 +1,5 @@
 #include "mat.h"
+#include "aux.h"
 
 using namespace std;
 
@@ -25,21 +26,30 @@ int height;
 int width;
 int framerate;
 
+
 int main(int argc, char* argv[])
 {
 
+	// string input_file = argv[1];
+	// string output_file = argv[2];
+	// int method = stoi(argv[3]);
+	// int frames_toAdd = stoi(argv[4]);
+
+	vector<Mat> el_video = load_video("/home/sebs/Desktop/metodosTP3/src/test");
+	show_video(el_video);
+
 	// Nota: trabaja con aritmetica de desborde. 
-	Mat imgFrame = Mat(3, 3);
-	imgFrame(0,0) = 126;
-	imgFrame(0,1) = 127;
-	imgFrame(0,2) = 128;
-	imgFrame(1,0) = 129;
-	imgFrame(1,1) = 130;
-	imgFrame(1,2) = 131;
-	imgFrame(1,2) += imgFrame(1,2) + 20;
-	imgFrame.Show();
-	imgFrame(0,2) += 128;
-	imgFrame.Show();
+	// Mat imgFrame = Mat(3, 3);
+	// imgFrame(0,0) = 126;
+	// imgFrame(0,1) = 127;
+	// imgFrame(0,2) = 128;
+	// imgFrame(1,0) = 129;
+	// imgFrame(1,1) = 130;
+	// imgFrame(1,2) = 131;
+	// imgFrame(1,2) += imgFrame(1,2) + 20;
+	// imgFrame.Show();
+	// imgFrame(0,2) += 128;
+	// imgFrame.Show();
 	return 0;
 }
 
