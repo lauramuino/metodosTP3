@@ -33,17 +33,19 @@ filas de la siguiente imagen y asi sucesivamente.
 int main(int argc, char* argv[])
 {
 
-	// string input_file = argv[1];
-	// string output_file = argv[2];
-	// int method = stoi(argv[3]);
-	// int frames_toAdd = stoi(argv[4]);
+	string input_file = argv[1];
+	string output_file = argv[2];
+	int method = stoi(argv[3]);
+	int frames_toAdd = stoi(argv[4]);
 
-
+// cout << "input_file:" << input_file << endl;
+// cout << "output_file:" << output_file << endl;
+// cout << "method:" << method << endl;
+// cout << "frames_toAdd:" << frames_toAdd << endl;
 
 	ifstream file(input_file.c_str());
 	string data;
 	unsigned char value;
-	vector<Mat> video_frames;
 
 	//cargo los datos 
 	file >> data;
@@ -55,8 +57,12 @@ int main(int argc, char* argv[])
 	file >> data;
 	frame_rate = stoi(data);
 
-	//cargo las matrices
+	vector<Mat> video_frames;
+	video_frames.reserve(numberOfFrames);
+	vector<Mat> generated_video_frames;
+	generated_video_frames.reserve((numberOfFrames-1) * frames_toAdd);
 
+	//cargo las matrices
 	for (int i = 0; i < numberOfFrames; ++i)
 	{
 		Mat frame = Mat(height, width);
@@ -70,10 +76,16 @@ int main(int argc, char* argv[])
 				frame(j,k) = value;
 			}
 		}
-
 		//la guardo en el vector
 		video_frames.push_back(frame);
 	}
+
+	show_video(video_frames);
+	genByCopy(video_frames, generated_video_frames, frames_toAdd);
+
+	show_video(generated_video_frames);
+
+
 
 
 	return 0;
