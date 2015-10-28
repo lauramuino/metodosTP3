@@ -2,13 +2,13 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "mat.h"
 #include <stdio.h>
 #include <algorithm>
 #include <stdlib.h>
 #include <math.h>
+#include "mat.h"
 using namespace std;
 
 
-vector<Mat> load_video(string input_file);
 void show_video(vector<Mat> v);
+void closest_neighbour(vector<Mat> video);

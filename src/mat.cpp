@@ -28,7 +28,19 @@ Mat::Mat(const Mat& anotherMat)
 	this->data_ = anotherMat.data_;
 }
 
+Mat Mat::clone() const
+{
+	Mat res(rows_, cols_);
+	const Mat& thisMat = *this;
 
+	for (int i = 0; i < rows_; i++) {
+		for (int j = 0; j < cols_; j++) {
+			res(i, j) = thisMat(i, j);
+		}
+	}
+
+	return res;
+}
 // Ojo, ahora es de char la matriz
 /* 
 Mat* Mat::operator*(double scalar)

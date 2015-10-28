@@ -1,9 +1,15 @@
 #include "mat.h"
 #include "aux.h"
 
+
 using namespace std;
 
-
+//VARIABLES GLOBALES
+int numberOfFrames;
+int height;
+int width;
+int frame_rate;
+int frames_toAdd;
 
 
 /*
@@ -21,10 +27,7 @@ width numeros correspondientes a los valores de cada pıxel en esa fila. Luego s
 filas de la siguiente imagen y asi sucesivamente.
 */
 
-int numberOfFrames;
-int height;
-int width;
-int framerate;
+
 
 
 int main(int argc, char* argv[])
@@ -35,21 +38,44 @@ int main(int argc, char* argv[])
 	// int method = stoi(argv[3]);
 	// int frames_toAdd = stoi(argv[4]);
 
-	vector<Mat> el_video = load_video("/home/sebs/Desktop/metodosTP3/src/test");
-	show_video(el_video);
 
-	// Nota: trabaja con aritmetica de desborde. 
-	// Mat imgFrame = Mat(3, 3);
-	// imgFrame(0,0) = 126;
-	// imgFrame(0,1) = 127;
-	// imgFrame(0,2) = 128;
-	// imgFrame(1,0) = 129;
-	// imgFrame(1,1) = 130;
-	// imgFrame(1,2) = 131;
-	// imgFrame(1,2) += imgFrame(1,2) + 20;
-	// imgFrame.Show();
-	// imgFrame(0,2) += 128;
-	// imgFrame.Show();
+
+	ifstream file(input_file.c_str());
+	string data;
+	unsigned char value;
+	vector<Mat> video_frames;
+
+	//cargo los datos 
+	file >> data;
+	numberOfFrames = stoi(data);
+	file >> data;
+	height = stoi(data);
+	file >> data;
+	width = stoi(data);
+	file >> data;
+	frame_rate = stoi(data);
+
+	//cargo las matrices
+
+	for (int i = 0; i < numberOfFrames; ++i)
+	{
+		Mat frame = Mat(height, width);
+		for (int j = 0; j < height; ++j)
+		{
+			for (int k = 0; k < width; ++k)
+			{
+				file >> data;
+				//averiguar si esto sirve para pasarlo a unsigned char
+				value = (unsigned char)stoi(data);
+				frame(j,k) = value;
+			}
+		}
+
+		//la guardo en el vector
+		video_frames.push_back(frame);
+	}
+
+
 	return 0;
 }
 
