@@ -10,7 +10,7 @@
 
 using namespace std;
 
-
+// Nota: unsigned char trabaja con aritmetica de desborde. 
 class Mat {
 	public:
 	    Mat(size_t rows_, size_t cols_);
@@ -21,14 +21,14 @@ class Mat {
 	    size_t cols() const;
 		void Show();
 		void ShowOctave();
-
+	    Mat clone() const;
 
 	    //vector<double> operator*(const vector<double>& x);
 	    //Mat* operator*(double scalar);
 	    //Mat operator+(const Mat& anotherMat);
 	    //Mat operator*(const Mat& anotherMat);
 	    //Mat& operator=(const Mat& anotherMat);
-	    //Mat clone() const;
+
 		//void checkBandMat();
 
 	private:
