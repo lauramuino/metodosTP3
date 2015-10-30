@@ -43,6 +43,10 @@ void spline_method(vector<Matrix>& original_video, vector<Matrix>& new_frames, i
 
 	//defino los h_i = x_(i+1) - x_(i)
 	vector<double> h(numberOfFrames);
+	
+	vector<double> b(numberOfFrames);
+	vector<double> c(numberOfFrames);
+	vector<double> d(numberOfFrames);
 	//defino los alphas
 	vector<double> alpha(numberOfFrames-1);
 	vector<double> l(numberOfFrames);
@@ -65,10 +69,21 @@ void spline_method(vector<Matrix>& original_video, vector<Matrix>& new_frames, i
 
 			for (int frame = 1; frame < numberOfFrames-1; ++frame)
 			{
-				l[frame]=2*(2.0/frame_rate) - h[frame-1]*mu[frame-1];
-				mu[frame] = h[frame]/l[frame];	
+				l[frame]  = 2*(2.0/frame_rate) - h[frame-1]*mu[frame-1];
+				mu[frame] = h[frame]/l[frame];
+				z[frame]  = (alpha[frame]-h[frame-1]*z[frame-1])/l[frame];
 			}
 
+			l[numberOfFrames-1]=1;
+			mu[numberOfFrames-1]=0;
+			z[numberOfFrames-1]=0;			
+
+			for (int frame = numberOfFrames-1; frame > 0; ++frame)
+			{
+				c[frame] = z[frame] - mu[frame]*c[frame+1];
+				b[frame] = ((original_video[frame+1](i,j) - original_video[frame](i,j))/h[frame]  ) - ( h[frame] * (c[frame+1] + 2*c[frame]) /3 ) ;
+				d[frame] = (c[frame+1] - c[frame]) / (3*h[frame]);
+			}
 		}
 	}
 }
