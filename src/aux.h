@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "mat.h"
-#include "video.h"
+//#include "video.h"
 
 using namespace std;
 
@@ -15,3 +15,4 @@ using namespace std;
 void show_video(vector<Matrix> v);
 void genByCopy(vector<Matrix>& original_video, vector<Matrix>& new_frames, int frames_toAdd);
 void spline_method(vector<Matrix>& original_video, vector<Matrix>& new_frames, int frames_toAdd, int frame_rate, int numberOfFrames, int height, int width);
+void linear_interpolation(vector<Matrix>& original_video, vector<Matrix>& new_frames, int frames_toAdd, int frame_rate, int numberOfFrames, int height, int width);
