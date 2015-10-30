@@ -57,15 +57,15 @@ int main(int argc, char* argv[])
 	file >> data;
 	frame_rate = stoi(data);
 
-	vector<Mat> video_frames;
+	vector<Matrix> video_frames;
 	video_frames.reserve(numberOfFrames);
-	vector<Mat> generated_video_frames;
+	vector<Matrix> generated_video_frames;
 	generated_video_frames.reserve((numberOfFrames-1) * frames_toAdd);
 
 	//cargo las matrices
 	for (int i = 0; i < numberOfFrames; ++i)
 	{
-		Mat frame = Mat(height, width);
+		Matrix frame = Matrix(height, width);
 		for (int j = 0; j < height; ++j)
 		{
 			for (int k = 0; k < width; ++k)

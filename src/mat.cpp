@@ -1,37 +1,37 @@
 #include "mat.h"
 
 
-Mat::Mat(size_t n, size_t m) : rows_(n), cols_(m), data_((n) * (m))
+Matrix::Matrix(size_t n, size_t m) : rows_(n), cols_(m), data_((n) * (m))
 {
 }
 
 
 
-unsigned char& Mat::operator()(size_t i, size_t j)
+unsigned char& Matrix::operator()(size_t i, size_t j)
 {
     return data_[i * cols_ + j];
 }
 
 
 
-unsigned char Mat::operator()(size_t i, size_t j) const
+unsigned char Matrix::operator()(size_t i, size_t j) const
 {
     return data_[i * cols_ + j];
 } 
 
 
 
-Mat::Mat(const Mat& anotherMat)
+Matrix::Matrix(const Mat& anotherMat)
 {
 	this->rows_ = anotherMat.rows_;
 	this->cols_ = anotherMat.cols_;
 	this->data_ = anotherMat.data_;
 }
 
-Mat Mat::clone() const
+Matrix Matrix::clone() const
 {
-	Mat res(rows_, cols_);
-	const Mat& thisMat = *this;
+	Matrix res(rows_, cols_);
+	const Matrix& thisMat = *this;
 
 	for (int i = 0; i < rows_; i++) {
 		for (int j = 0; j < cols_; j++) {
@@ -43,10 +43,10 @@ Mat Mat::clone() const
 }
 // Ojo, ahora es de char la matriz
 /* 
-Mat* Mat::operator*(double scalar)
+Matrix* Matrix::operator*(double scalar)
 {
-	Mat& thisMat = *this;
-	Mat* res = new Mat(thisMat.cols(), thisMat.rows());
+	Matrix& thisMat = *this;
+	Matrix* res = new Matrix(thisMat.cols(), thisMat.rows());
 
 	for (int i = 0; i < thisMat.rows(); i++) {
 		for (int j = 0; j < thisMat.cols(); j++) {
@@ -58,10 +58,10 @@ Mat* Mat::operator*(double scalar)
 }
 */
 /*
-vector<double> Mat::operator*(const vector<double>& x)
+vector<double> Matrix::operator*(const vector<double>& x)
 {
 	vector<double> res(x.size());
-	Mat& thisMat = *this;
+	Matrix& thisMat = *this;
 	
 	assert(x.size() == cols_&& "Error al multiplicar matriz y vector de diferentes dimensiones");
 
@@ -77,23 +77,23 @@ vector<double> Mat::operator*(const vector<double>& x)
 }
 */
 
-size_t Mat::rows() const
+size_t Matrix::rows() const
 {
 	return rows_;
 }
 
 
 
-size_t Mat::cols() const
+size_t Matrix::cols() const
 {
 	return cols_;
 }
 
 
 
-void Mat::ShowOctave()
+void Matrix::ShowOctave()
 {
-	Mat& thisMat = *this;
+	Matrix& thisMat = *this;
 	cout << "[";
 	for (int j = 0; j < rows_; j++) {
 		for (int k = 0; k < cols_; k++) {
@@ -106,9 +106,9 @@ void Mat::ShowOctave()
 
 
 
-void Mat::Show()
+void Matrix::Show()
 {
-	Mat& thisMat = *this;
+	Matrix& thisMat = *this;
 	for (int j = 0; j < rows_; j++) {
 		for (int k = 0; k < cols_; k++) {
 			cout << +thisMat(j,k) << " "; // el + es un casteo automatico
