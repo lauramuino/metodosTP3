@@ -87,3 +87,41 @@ void spline_method(vector<Matrix>& original_video, vector<Matrix>& new_frames, i
 		}
 	}
 }
+
+
+
+void linear_interpolation(vector<Matrix>& original_video, vector<Matrix>& new_frames, int frames_toAdd, int frame_rate, int numberOfFrames, int height, int width)
+{
+	double lambda;
+	unsigned char new_pixel;
+	//para cada pixel
+	for (int frame = 0; frame < numberOfFrames-1; ++frame)
+	{
+		for (int p_i = 0; p_i < height; p_i++) {
+			for (int p_j = 0; p_j < width; p_j++) {
+				for (int add = 0; add < frames_toAdd; ++add)
+				{
+					lambda = (double)(add+1)*(1.0/(double)(frames_toAdd+1));
+					
+					unsigned char pixel0 = original_video[frame](p_i, p_j);
+					unsigned char pixel1 = original_video[frame+1](p_i, p_j);
+					
+					if(pixel0>pixel1){
+						//caso decreciente
+						double new_pixel_f = pixel0 - lambda*(double)(pixel0-pixel1); 
+
+						new_pixel = (unsigned char)new_pixel_f;
+						
+					}else{
+						//caso creciente
+						double new_pixel_f = pixel0 + lambda*(double)(pixel1-pixel0);
+						new_pixel = (unsigned char)new_pixel_f;
+					}
+
+					new_frames[frame*frames_toAdd+add](p_i, p_j) = new_pixel; 
+				}
+
+			}
+		}
+	}
+}

@@ -32,7 +32,7 @@ filas de la siguiente imagen y asi sucesivamente.
 
 int main(int argc, char* argv[])
 {
-/*
+
 	string input_file = argv[1];
 	string output_file = argv[2];
 	int method = stoi(argv[3]);
@@ -54,8 +54,8 @@ int main(int argc, char* argv[])
 	/*
 	video_frames.reserve(numberOfFrames);
 	vector<Matrix> generated_video_frames;
-	generated_video_frames.reserve((numberOfFrames-1) * frames_toAdd);
-
+	Matrix nullframe(height,width);
+	for(int i=0;i<(numberOfFrames-1)*frames_toAdd;i++)generated_video_frames.push_back(nullframe);
 	//cargo las matrices
 	for (int i = 0; i < numberOfFrames; ++i)
 	{
@@ -77,11 +77,19 @@ int main(int argc, char* argv[])
 
 
 
-
 	// show_video(video_frames);
 	// genByCopy(video_frames, generated_video_frames, frames_toAdd);
 
 	// show_video(generated_video_frames);
+
+
+
+
+
+
+
+
+
 
 
 
