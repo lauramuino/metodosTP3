@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "mat.h"
-#include "video.h"
+//#include "video.h"
 
 using namespace std;
 

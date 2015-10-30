@@ -1,6 +1,6 @@
-#include "mat.h"
+//#include "mat.h"
 #include "aux.h"
-
+#include "video.h"
 
 using namespace std;
 
@@ -32,32 +32,26 @@ filas de la siguiente imagen y asi sucesivamente.
 
 int main(int argc, char* argv[])
 {
-
+/*
 	string input_file = argv[1];
 	string output_file = argv[2];
 	int method = stoi(argv[3]);
 	int frames_toAdd = stoi(argv[4]);
 
-// cout << "input_file:" << input_file << endl;
-// cout << "output_file:" << output_file << endl;
-// cout << "method:" << method << endl;
-// cout << "frames_toAdd:" << frames_toAdd << endl;
+	Video video(input_file);
 
-	ifstream file(input_file.c_str());
-	string data;
-	unsigned char value;
-
-	//cargo los datos 
-	file >> data;
-	numberOfFrames = stoi(data);
-	file >> data;
-	height = stoi(data);
-	file >> data;
-	width = stoi(data);
-	file >> data;
-	frame_rate = stoi(data);
+	numberOfFrames = video.getFrames();
+	height = video.getHeight();
+	width = video.getWidth();
+	frame_rate = video.getFrameRate();
 
 	vector<Matrix> video_frames;
+
+	for (int i = 0; i < numberOfFrames; ++i){
+		video.siguienteFrame(video_frames[i]);
+	}
+
+	/*
 	video_frames.reserve(numberOfFrames);
 	vector<Matrix> generated_video_frames;
 	generated_video_frames.reserve((numberOfFrames-1) * frames_toAdd);
@@ -79,16 +73,19 @@ int main(int argc, char* argv[])
 		//la guardo en el vector
 		video_frames.push_back(frame);
 	}
+	*/
 
-	show_video(video_frames);
-	genByCopy(video_frames, generated_video_frames, frames_toAdd);
 
-	show_video(generated_video_frames);
+
+
+	// show_video(video_frames);
+	// genByCopy(video_frames, generated_video_frames, frames_toAdd);
+
+	// show_video(generated_video_frames);
 
 
 
 
 	return 0;
 }
-
 
