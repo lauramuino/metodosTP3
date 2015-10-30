@@ -20,7 +20,7 @@ void show_video(vector<Matrix> v){
 
 
 //metodo de vecino mas cercano
-void genByCopy(vector<Matrix> & original_video, vector<Matrix> & new_frames, int frames_toAdd){
+void genByCopy(vector<Matrix>& original_video, vector<Matrix>& new_frames, int frames_toAdd){
 	for (int i = 0; i < original_video.size() ; ++i)
 	{
 		if(i>0 && i< original_video.size()-1 ){ // soy un frame del medio
@@ -39,7 +39,7 @@ void genByCopy(vector<Matrix> & original_video, vector<Matrix> & new_frames, int
 
 //metodo de interpolacion fragmentaria cubica (o splines) natural
 //para mas informacion, leer el burden.pdf 150/151
-void spline_method(vector<Matrix> & original_video, vector<Matrix> & new_frames, int frames_toAdd, int frame_rate, int numberOfFrames, int height, int width){
+void spline_method(vector<Matrix>& original_video, vector<Matrix>& new_frames, int frames_toAdd, int frame_rate, int numberOfFrames, int height, int width){
 
 	//defino los h_i = x_(i+1) - x_(i)
 	vector<double> h(numberOfFrames);

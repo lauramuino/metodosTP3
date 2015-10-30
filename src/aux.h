@@ -7,9 +7,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include "mat.h"
+#include "video.h"
+
 using namespace std;
 
 
-void show_video(vector<Mat> v);
-void genByCopy(vector<Mat> & original_video, vector<Mat> & new_frames, int frames_toAdd);
-void spline_method(vector<Mat> & original_video, vector<Mat> & new_frames, int frames_toAdd, int frame_rate, int numberOfFrames, int height, int width);
+void show_video(vector<Matrix> v);
+void genByCopy(vector<Matrix>& original_video, vector<Matrix>& new_frames, int frames_toAdd);
+void spline_method(vector<Matrix>& original_video, vector<Matrix>& new_frames, int frames_toAdd, int frame_rate, int numberOfFrames, int height, int width);

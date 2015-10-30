@@ -21,7 +21,7 @@ unsigned char Matrix::operator()(size_t i, size_t j) const
 
 
 
-Matrix::Matrix(const Mat& anotherMat)
+Matrix::Matrix(const Matrix& anotherMat)
 {
 	this->rows_ = anotherMat.rows_;
 	this->cols_ = anotherMat.cols_;

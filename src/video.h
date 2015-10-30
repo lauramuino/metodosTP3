@@ -14,7 +14,7 @@
 #include "/usr/local/include/opencv2/highgui/highgui.hpp"
 #include "/usr/local/include/opencv2/video/video.hpp"
 
-#include "matrix.h"
+#include "mat.h"
 
 using namespace cv;
 using namespace std;
@@ -23,7 +23,7 @@ class Video {
 	public:
 	    Video(std::string archivo){
 
-	    	videocapture.open(archivo);
+	    	video.open(archivo);
 
 	    }
 
@@ -31,7 +31,7 @@ class Video {
 
 			Mat frame_cv, frame_cv_g;
 
-			bool hay_siguiente = video->read(frame_cv);
+			bool hay_siguiente = video.read(frame_cv);
 
 			imshow("frame",frame_cv);
 
@@ -72,7 +72,7 @@ class Video {
 		}
 
 	private:
-		VideoCapture videocapture;
+		VideoCapture video;
 	};
  
 
