@@ -1,4 +1,5 @@
 #include "video.h"
+bool primerframe = true;
 
 void showFrame(Matrix frame){
 
@@ -25,16 +26,18 @@ bool Video::siguienteFrame(Matrix& frame) {
 	if(hay_siguiente){
 		cvtColor(frame_cv,frame_cv_g,CV_RGB2GRAY);
 
-		imshow("frame g",frame_cv_g);
+		//imshow("frame g",frame_cv_g);
+		//waitKey(0);
 
-		for(int i = 0 ; i < frame_cv_g.rows ; i++){
-
-			for(int j = 0 ; j < frame_cv_g.cols ; j++){
+		for (int i = 0; i < frame_cv_g.rows; i++) {
+			for (int j = 0; j < frame_cv_g.cols; j++) {
 				double pixel = (double)frame_cv_g.at<unsigned char>(i,j);
+				//if (primerframe) cout << pixel << " ";
 				frame(j,i) = pixel;
-
 			}
+			//cout << endl;
 		}
+		primerframe = false;
 	}
 
 	waitKey(10);

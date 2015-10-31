@@ -106,13 +106,13 @@ void linear_interpolation(vector<Matrix>& original_video, vector<Matrix>& new_fr
 					unsigned char pixel0 = original_video[frame](p_i, p_j);
 					unsigned char pixel1 = original_video[frame+1](p_i, p_j);
 					
-					if(pixel0>pixel1){
+					if(pixel0 > pixel1) {
 						//caso decreciente
 						double new_pixel_f = pixel0 - lambda*(double)(pixel0-pixel1); 
 
 						new_pixel = (unsigned char)new_pixel_f;
 						
-					}else{
+					} else {
 						//caso creciente
 						double new_pixel_f = pixel0 + lambda*(double)(pixel1-pixel0);
 						new_pixel = (unsigned char)new_pixel_f;
@@ -124,4 +124,42 @@ void linear_interpolation(vector<Matrix>& original_video, vector<Matrix>& new_fr
 			}
 		}
 	}
+}
+
+
+
+void convert_to_video_and_save(vector<Matrix>& generated_video_frames, string output_file, int frame_rate, int width, int height)
+{
+	VideoWriter output_video;
+	Size size(width, height);
+	//cout << "1" << endl;
+	output_video.open(output_file, CV_FOURCC('M','J','P','G'), frame_rate, size, 0);
+	//cout << "width: " << width << " height: " << height << endl;
+	//cout << "2" << endl;
+	for (Matrix& frame : generated_video_frames) {
+		Mat opencv_frame = convert_to_opencv_frame(frame, size);
+		//cout << "3" << endl;
+		output_video.write(opencv_frame);
+		//cout << "4" << endl;
+	}
+}
+
+
+
+Mat convert_to_opencv_frame(Matrix& frame, Size size)
+{
+	Mat opencv_frame(size, CV_8U);
+	//cout << "cols: " << opencv_frame.cols << " rows: " << opencv_frame.rows << endl;
+	
+	for (int i = 0; i < frame.rows(); i++) {
+		for(int j = 0; j < frame.cols(); j++) {
+			//double pixel = (double)frame_cv_g.at<unsigned char>(i,j);
+			//cout << (double)frame(j, i) << " ";
+			opencv_frame.at<unsigned char>(i, j) = frame(j, i);
+		}
+		cout << endl;
+	}
+
+	//imshow("asd", opencv_frame);
+	//waitKey(0);
 }

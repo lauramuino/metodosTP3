@@ -46,29 +46,32 @@ int main(int argc, char* argv[])
 	frame_rate = video.getFrameRate();
 
 	vector<Matrix> video_frames;
+	vector<Matrix> generated_video_frames;
 
 	Matrix nullframe(height,width);
 
-	for(int i=0;i<(numberOfFrames);i++)
+	for (int i = 0; i < numberOfFrames; i++)
 		video_frames.push_back(nullframe);
 
+	//levanto los frames y los guardo en un vector de matrices.
 	for (int i = 0; i < numberOfFrames; ++i){
-	
 		video.siguienteFrame(video_frames[i]);
 	}
-
-
-	linear_interpolation(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
-
-
-
-
-
-
-
-
-
-
+	
+/*
+	switch (method) {
+		case 0:	
+				break;
+		case 1: linear_interpolation(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
+				break;
+		case 2: spline_method(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
+				break;
+		default: cout << "Metodo incorrecto (se ingreso " << method << ")" << endl;
+				exit(1);
+	}
+*/
+	convert_to_video_and_save(video_frames, output_file, frame_rate, width, height);
+	//convert_to_video_and_save(generated_video_frames, output_file, frame_rate, width, height);
 
 	return 0;
 }
