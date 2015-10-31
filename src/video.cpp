@@ -1,5 +1,12 @@
 #include "video.h"
 
+void showFrame(Matrix frame){
+
+	
+
+
+}
+
 
 Video::Video(std::string archivo){
 

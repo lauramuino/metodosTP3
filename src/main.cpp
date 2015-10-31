@@ -47,42 +47,18 @@ int main(int argc, char* argv[])
 
 	vector<Matrix> video_frames;
 
+	Matrix nullframe(height,width);
+
+	for(int i=0;i<(numberOfFrames);i++)
+		video_frames.push_back(nullframe);
+
 	for (int i = 0; i < numberOfFrames; ++i){
+	
 		video.siguienteFrame(video_frames[i]);
 	}
 
-	/*
-	video_frames.reserve(numberOfFrames);
-	vector<Matrix> generated_video_frames;
-	Matrix nullframe(height,width);
-	for(int i=0;i<(numberOfFrames-1)*frames_toAdd;i++)generated_video_frames.push_back(nullframe);
-	//cargo las matrices
-	for (int i = 0; i < numberOfFrames; ++i)
-	{
-		Matrix frame = Matrix(height, width);
-		for (int j = 0; j < height; ++j)
-		{
-			for (int k = 0; k < width; ++k)
-			{
-				file >> data;
-				//averiguar si esto sirve para pasarlo a unsigned char
-				value = (unsigned char)stoi(data);
-				frame(j,k) = value;
-			}
-		}
-		//la guardo en el vector
-		video_frames.push_back(frame);
-	}
-	*/
 
-
-
-	// show_video(video_frames);
-	// genByCopy(video_frames, generated_video_frames, frames_toAdd);
-
-	// show_video(generated_video_frames);
-
-
+	linear_interpolation(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
 
 
 

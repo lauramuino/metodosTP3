@@ -1,2 +1,10 @@
-Instalar opencv 2.4
-http://docs.opencv.org/2.4/doc/tutorials/introduction/linux_install/linux_install.html
+clonar https://github.com/Itseez/opencv
+
+crear carpeta build dentro del repo
+
+cd build
+cmake ..
+make -j7
+sudo make install
+sudo ldconfig
+
