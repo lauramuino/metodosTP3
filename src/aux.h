@@ -19,4 +19,5 @@ void linear_interpolation(vector<Matrix>& original_video, vector<Matrix>& new_fr
 void convert_to_video_and_save(vector<Matrix>& generated_video_frames, string output_file, int frame_rate, int width, int height);
 vector<Matrix> load_video(string input_file);
 void save_video(string output_file, int numberOfFrames, int height, int width, int frame_rate, vector<Matrix>& video);
+unsigned char evaluate_pol(unsigned char a, double b, double c, double d, double diff_x_xj);
 //Mat convert_to_opencv_frame(Matrix& frame, Size size);
