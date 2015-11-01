@@ -40,33 +40,39 @@ void genByCopy(vector<Matrix>& original_video, vector<Matrix>& new_frames, int f
 //metodo de interpolacion fragmentaria cubica (o splines) natural
 //para mas informacion, leer el burden.pdf 150/151
 void spline_method(vector<Matrix>& original_video, vector<Matrix>& new_frames, int frames_toAdd, int frame_rate, int numberOfFrames, int height, int width){
-
+/*
+cout << "numberOfFrames " << numberOfFrames << endl;
+cout << "height " << height << endl;
+cout << "width " << width << endl;
+cout << "frame_rate " << frame_rate << endl;
+cout << "frames_toAdd " << frames_toAdd << endl;
+*/
 	//defino los h_i = x_(i+1) - x_(i)
 	vector<double> h(numberOfFrames);
-	
 	vector<double> b(numberOfFrames);
 	vector<double> c(numberOfFrames);
 	vector<double> d(numberOfFrames);
 	//defino los alphas
-	vector<double> alpha(numberOfFrames-1);
+	vector<double> alpha(numberOfFrames);
 	vector<double> l(numberOfFrames);
 	vector<double> mu(numberOfFrames);
 	vector<double> z(numberOfFrames);
+
 
 	for (int i = 0; i < height; ++i) //para cada posicion i,j del frame
 	{
 		for (int j = 0; j < width; ++j)
 		{
-			for (int frame = 0; frame < numberOfFrames-1; ++frame) //para cada frame
-				h[i] = (double)(1.0/frame_rate); //consideramos los x como el tiempo
-
-			for (int frame = 1; frame < numberOfFrames-1; ++i)
+			//cout << "pixel (" << i << ", " << j << ")" << endl;
+			for (int frame = 0; frame < numberOfFrames-1; ++frame){ //para cada frame
+				h[frame] = (double)(1.0/ (double) frame_rate); //consideramos los x como el tiempo
+			} 
+			for (int frame = 1; frame < numberOfFrames-2; ++frame){
 				alpha[frame] = (3.0/h[frame]) * (original_video[frame+1](i,j) - original_video[frame](i,j)) - (3.0/h[frame-1]) * (original_video[frame](i,j) - original_video[frame-1](i,j));
-			
+			}
 			l[0]=1;
 			mu[0]=0;
 			z[0]=0;
-
 			for (int frame = 1; frame < numberOfFrames-1; ++frame)
 			{
 				l[frame]  = 2*(2.0/frame_rate) - h[frame-1]*mu[frame-1];
@@ -77,21 +83,47 @@ void spline_method(vector<Matrix>& original_video, vector<Matrix>& new_frames, i
 			l[numberOfFrames-1]=1;
 			mu[numberOfFrames-1]=0;
 			z[numberOfFrames-1]=0;			
-
-			for (int frame = numberOfFrames-1; frame > 0; ++frame)
+			for (int frame = numberOfFrames-2; frame >= 0; frame--)
 			{
 				c[frame] = z[frame] - mu[frame]*c[frame+1];
 				b[frame] = ((original_video[frame+1](i,j) - original_video[frame](i,j))/h[frame]  ) - ( h[frame] * (c[frame+1] + 2*c[frame]) /3 ) ;
 				d[frame] = (c[frame+1] - c[frame]) / (3*h[frame]);
+
+				//cout << "Polinomio para frame " << frame << " pixel (" << i << ", " << j << "): " << "a: " << +original_video[frame](i,j) << " b: " << b[frame] << " c: " << c[frame] << " d: " << d[frame] << endl;
 			}
+
+			for (int frame = 0; frame < numberOfFrames; ++frame)
+			{
+				for (int add = 0; add < frames_toAdd; ++add)
+				{
+					new_frames[frame*frames_toAdd+add](i, j) = evaluate_pol(original_video[frame](i,j), b[frame], c[frame], d[frame], (add+1)*(h[frame]/(frames_toAdd+1)) ); 
+				}
+			}
+
 		}
 	}
 }
 
+unsigned char evaluate_pol(unsigned char a, double b, double c, double d, double diff_x_xj){
+	double res = a + b*(diff_x_xj) + c*pow(diff_x_xj,2) + d*pow(diff_x_xj, 3);
+	if(res>255){
+		return 255;
+	}else if(res < 0){
+		return 0;
+	}else{
+		return (unsigned char) res;
+	}
 
+} 
 
 void linear_interpolation(vector<Matrix>& original_video, vector<Matrix>& new_frames, int frames_toAdd, int frame_rate, int numberOfFrames, int height, int width)
 {
+cout << "numberOfFrames " << numberOfFrames << endl;
+cout << "height " << height << endl;
+cout << "width " << width << endl;
+cout << "frame_rate " << frame_rate << endl;
+cout << "frames_toAdd " << frames_toAdd << endl;
+
 	double lambda;
 	unsigned char new_pixel;
 	//para cada pixel
@@ -127,7 +159,7 @@ void linear_interpolation(vector<Matrix>& original_video, vector<Matrix>& new_fr
 }
 
 
-
+/*
 void convert_to_video_and_save(vector<Matrix>& generated_video_frames, string output_file, int frame_rate, int width, int height)
 {
 	VideoWriter output_video;
@@ -162,4 +194,71 @@ Mat convert_to_opencv_frame(Matrix& frame, Size size)
 
 	//imshow("asd", opencv_frame);
 	//waitKey(0);
+}
+*/
+
+vector<Matrix> load_video(string input_file){
+	ifstream file(input_file.c_str());
+	string data;
+	//int frames, height, width, frame_rate;
+	unsigned char value;
+	vector<Matrix> video_frames;
+
+	//cargo los datos 
+	file >> data;
+	numberOfFrames = stoi(data);
+	file >> data;
+	height = stoi(data);
+	file >> data;
+	width = stoi(data);
+	file >> data;
+	frame_rate = stoi(data);
+/*
+cout << "numberOfFrames " << numberOfFrames << endl;
+cout << "height " << height << endl;
+cout << "width " << width << endl;
+cout << "frame_rate " << frame_rate << endl;
+*/
+	//cargo las matrices
+	for (int i = 0; i < numberOfFrames; ++i)
+	{
+		Matrix frame = Matrix(height, width);
+		for (int j = 0; j < height; ++j)
+		{
+			for (int k = 0; k < width; ++k)
+			{
+				file >> data;
+				//averiguar si esto sirve para pasarlo a unsigned char
+				value = (unsigned char)stoi(data);
+				frame(j,k) = value;
+			}
+		}
+		//la guardo en el vector
+		video_frames.push_back(frame);
+	}
+	return video_frames;
+}
+
+
+
+
+void save_video(string output_file, int numberOfFrames, int height, int width, int frame_rate, vector<Matrix>& video)
+{
+	ofstream f(output_file);
+
+	f << numberOfFrames << endl;
+	f << height << "," << width << endl; //formato infesto
+	f << frame_rate << endl;
+
+	for (Matrix& frame : video) {
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				if (j != width-1)
+					f << (double)frame(i,j) << ", ";
+				else
+					f << (double)frame(i,j);	//si es la ultima linea
+			}
+			f << endl;
+		}
+	}
 }
