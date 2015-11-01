@@ -217,3 +217,27 @@ cout << "frame_rate " << frame_rate << endl;
 	}
 	return video_frames;
 }
+
+
+
+
+void save_video(string output_file, int numberOfFrames, int height, int width, int frame_rate, vector<Matrix>& video)
+{
+	ofstream f(output_file);
+
+	f << numberOfFrames << endl;
+	f << height << "," << width << endl; //formato infesto
+	f << frame_rate << endl;
+
+	for (Matrix& frame : video) {
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				if (j != width-1)
+					f << (double)frame(i,j) << ", ";
+				else
+					f << (double)frame(i,j);	//si es la ultima linea
+			}
+			f << endl;
+		}
+	}
+}
