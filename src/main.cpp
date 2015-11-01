@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 		generated_video_frames.push_back(nullframe);
 
 cout << "method: " << method << endl;
-cout.flush();
+//cout.flush();
 	switch (method) {
 		case 0:	
 				break;
@@ -60,7 +60,9 @@ cout.flush();
 				exit(1);
 	}
 
-
+//show_video(generated_video_frames);
+//save_video(output_file, numberOfFrames, height, width, frame_rate, vector<Matrix>& video)
+save_video(output_file, numberOfFrames, height, width, frame_rate, frames_toAdd, video_frames, generated_video_frames);
 
 /*
 	Video video(input_file);

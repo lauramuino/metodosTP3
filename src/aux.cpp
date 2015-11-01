@@ -242,23 +242,44 @@ cout << "frame_rate " << frame_rate << endl;
 
 
 
-void save_video(string output_file, int numberOfFrames, int height, int width, int frame_rate, vector<Matrix>& video)
+void save_video(string output_file, int numberOfFrames, int height, int width, int frame_rate, int frames_toAdd, vector<Matrix>& original_video, vector<Matrix>& new_video)
 {
 	ofstream f(output_file);
-
-	f << numberOfFrames << endl;
+/*
+cout << "numberOfFrames " << numberOfFrames << endl;
+cout << "height " << height << endl;
+cout << "width " << width << endl;
+cout << "frame_rate " << frame_rate << endl;
+*/
+	f << numberOfFrames + (numberOfFrames-1)*frames_toAdd << endl;
 	f << height << "," << width << endl; //formato infesto
 	f << frame_rate << endl;
 
-	for (Matrix& frame : video) {
+	for (int frame = 0; frame < original_video.size(); ++frame){
+		//escribo un frame original
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				if (j != width-1)
-					f << (double)frame(i,j) << ", ";
+					f << (double)original_video[frame](i,j) << ", ";
 				else
-					f << (double)frame(i,j);	//si es la ultima linea
+					f << (double)original_video[frame](i,j);	//si es la ultima linea
 			}
-			f << endl;
+		f << endl;
 		}
+		//escribo frames_toAdd frames (los interpolados)
+		for (int add = 0; add < frames_toAdd && frame < original_video.size()-1; ++add)
+		{
+			//escribo un frame de los interpolados
+			for (int i = 0; i < height; i++) {
+				for (int j = 0; j < width; j++) {
+					if (j != width-1)
+						f << (double)new_video[frame*frames_toAdd+add](i,j) << ", ";
+					else
+						f << (double)new_video[frame*frames_toAdd+add](i,j);	//si es la ultima linea
+				}
+			f << endl;
+			}
+		}
+		
 	}
 }

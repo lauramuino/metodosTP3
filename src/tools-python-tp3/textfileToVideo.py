@@ -3,7 +3,7 @@ import cv2
 #########################
 # Parametros de entrada.#
 #########################
-textFilename = 'funnybaby.txt'
+textFilename = 'out.txt'
 videoFilename = 'fb.avi'
 
 file = open(textFilename,"r")
