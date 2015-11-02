@@ -1,10 +1,19 @@
 import numpy as np
 import cv2
+import sys
+
 #########################
 # Parametros de entrada.#
 #########################
-textFilename = 'out.txt'
-videoFilename = 'fb.avi'
+
+if(len(sys.argv) < 2):
+	print "Use:"
+	print "textToVideo.py <generated_video.txt> <output_video.avi/mp4>"
+	quit()
+
+
+textFilename = sys.argv[1]
+videoFilename = sys.argv[2]
 
 file = open(textFilename,"r")
 
