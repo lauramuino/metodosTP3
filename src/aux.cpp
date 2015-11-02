@@ -239,7 +239,7 @@ cout << "width " << width << endl;
 cout << "frame_rate " << frame_rate << endl;
 */
 	f << numberOfFrames + (numberOfFrames-1)*frames_toAdd << endl;
-	f << height << "," << width << endl; //formato infesto
+	f << height << " " << width << endl; //formato infesto
 	f << frame_rate << endl;
 
 	for (int frame = 0; frame < original_video.size(); ++frame){
@@ -247,7 +247,7 @@ cout << "frame_rate " << frame_rate << endl;
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				if (j != width-1)
-					f << (double)original_video[frame](i,j) << ", ";
+					f << (double)original_video[frame](i,j) << " ";
 				else
 					f << (double)original_video[frame](i,j);	//si es la ultima linea
 			}
@@ -260,7 +260,7 @@ cout << "frame_rate " << frame_rate << endl;
 			for (int i = 0; i < height; i++) {
 				for (int j = 0; j < width; j++) {
 					if (j != width-1)
-						f << (double)new_video[frame*frames_toAdd+add](i,j) << ", ";
+						f << (double)new_video[frame*frames_toAdd+add](i,j) << " ";
 					else
 						f << (double)new_video[frame*frames_toAdd+add](i,j);	//si es la ultima linea
 				}
