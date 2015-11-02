@@ -270,3 +270,31 @@ cout << "frame_rate " << frame_rate << endl;
 		
 	}
 }
+
+
+
+double ECM(Matrix& frame1, Matrix& frame2)
+{
+	assert(frame1.cols() == frame2.cols() && frame1.rows() == frame2.rows());
+
+	int m = frame1.rows();
+	int n = frame1.cols();
+	double acum = 0;
+
+	for (int i = 0; i < m; i++) {
+		for (int j = 0; j < n; j++) {
+			acum += pow(abs(frame1(i,j) - frame2(i,j)), 2); 
+		}
+	}
+
+	acum *= 1.0/(double)(n*m);
+
+	return acum;
+}
+
+
+
+double PSNR(Matrix& frame1, Matrix& frame2)
+{
+	return 10*log10((255*255) / ECM(frame1, frame2));
+}
