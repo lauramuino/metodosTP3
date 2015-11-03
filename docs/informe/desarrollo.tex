@@ -1,5 +1,15 @@
 \section{Desarrollo}
 
+\subsection{Vecino más cercano}
+El algoritmo es bastante simple, cada frame a agregar, es la copia exacta de su frame vecino más cercano.\\
+
+\subsection{Interpolación lineal}
+Equivale a encontrar los n-1 polinomios de primer grado $S_{j}$ que pasan por los puntos distintos $(x_{j},f(x_{j}))(x_{j+1},f(x_{j+1}))$ $\forall j \in (0,n-2)$.\\
+En nuestro caso definimos los puntos $x_{0}, ... , x_{n-1}$ como el tiempo en que cada frame es reproducido, con lo cual son distintos. Los valores en cada $x_{j}$ equivalen al valor de un pixel del j-ésimo frame. Es decir, se generan para cada pixel (i,j) de los n frames, n-1 polinomios.\\
+
+
 \subsection{Interpolación cúbica o splines}
 
-Para las posiciones (i,j) de todos los frames del video, generamos los puntos intermedios a estos con splines, y asi generar las matrices de relleno posición a posición. Los puntos de interpolación $x_{0} .. x_{n}$ representan el tiempo en el que cada frame es reproducido, esto esta ligado con el framerate del video original.
+Al igual que en el método de interpolación lineal, para las posiciones (i,j) de todos los frames del video, generamos los puntos intermedios a estos con splines, y asi generar las matrices de relleno posición a posición. Los puntos de interpolación $x_{0} .. x_{n}$ siguen representando el tiempo en el que cada frame es reproducido, esto está ligado con el framerate del video original.\\
+
+%mañana hago lo del burder =_=
