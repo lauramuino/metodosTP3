@@ -9,7 +9,39 @@ En nuestro caso definimos los puntos $x_{0}, ... , x_{n-1}$ como el tiempo en qu
 
 
 \subsection{Interpolación cúbica o splines}
+%Suponemos que la cantidad de frames totales (originales) es n+1, para que los índices queden bonitos.
 
 Al igual que en el método de interpolación lineal, para las posiciones (i,j) de todos los frames del video, generamos los puntos intermedios a estos con splines, y asi generar las matrices de relleno posición a posición. Los puntos de interpolación $x_{0} .. x_{n}$ siguen representando el tiempo en el que cada frame es reproducido, esto está ligado con el framerate del video original.\\
 
-%mañana hago lo del burder =_=
+Para construir los n splines, se deben averiguar los valores de 4n constantes a, b, c y d, correspondientes a los coeficientes de cada uno de los polinomios, con lo que se tiene bastante flexibilidad para asegurar que los splines construidos no solo son continuos y diferenciables en su intervalo, sino que tienen derivada segunda continua.\\
+Primero recordaremos la definición de la interpolación cúbica por splines, para poder obtener propiedades a partir de ella: \\
+Dada una función f: [a, b] y un grupo de nodos $a= x_{0} < x_{1} < … < x_{n} = b$, una función interpolante cúbica S para f es una función que satisface las siguientes condiciones: \\
+
+\begin{enumerate}
+\item  S(x) es un polinomio de tercer grado, lo notamos como $S_{j}$ para el intervalo $[x_{j},x_{j+1}]$ $\forall j \in (0, n-1)$.
+\item $S_{j}(x_{j})$ = $f(x_{j})$  y $S_{j}(x_{j+1})$ = $f(x_{j+1})$ $\forall j \int (0, n-1)$.
+\item $S_{j+1}(x_{j+1})$ = $S_{j}(x_{j+1})$ $\forall j \in (0, n-2)$ (implicado por b)).
+\item $S'_{j+1}(x_{j+1})$ = $S'_{j}(x_{j+1})$ $\forall j \in (0, n-2)$.
+\item $S''_{j+1}(x_{j+1})$ = $S''_{j}(x_{j+1})$ $\forall j \in (0, n-2)$.
+\item Alguna de las siguientes condiciones debe satisfacerse:
+  \begin{enumerate}
+  \item $S''(x_{0})$ = $S''(x_{n})$ = 0 (limite natural o libre).
+  \item $S'(x_{0})$ = $f'(x_{0})$ y $S'(x_{n})$ = $f'(x_{n})$.
+  \end{enumerate}
+\end{enumerate}
+
+En general la segunda condición del punto f) provee una aproximación más precisa porque incluye más información, sin embargo requeire los valores de la derivada de f en los puntos de aproximación o una aproximación precisa de esos valores. Por esa razón, nos enfocaremos en realizar un spline natural.\\
+
+Construimos el spline, aplicamos las condiciones de la definición a los polinomios cúbicos
+
+$$S_{j}(x) = a_{j} + b_{j} (x - x_{j}) + c_{j} (x - x_{j})^{2} + d_{j} (x - x_{j})^{3}$$
+
+\forall j \in (0, n-1). Como $S_{j}$ = $a_{j}$ = $f(x_{j})$, la condición c) puede ser aplicada para obtener
+
+$$ a_{j+1} = S_{j+1}(x_{j+1}) = S_{j}(x_{j+1}) = a_{j} + b_{j} (x_{j+1} - x_{j}) + c_{j} (x_{j+1} - x_{j})^{2} + d_{j} (x_{j+1} - x_{j})^{3}$$
+
+\forall j \in (0, n-2). Los terminos $ x_{j+1} - x_{j} $ los reenombraremos con la variable $h_{j}$ \forall j \in (0, n-2) para mayor claridad. Si además llamamos $a_{n} = f(x_{n})$, entonces la ecuación
+$$a_{j+1} = a_{j} + b_{j} h_{j} + c_{j} h_{j}^{2} + d_{j} h_{j}^{3} $$
+vale \forall j \in (0, n-1).
+
+%seguir desde la pagina 166 del burden
