@@ -146,43 +146,6 @@ void linear_interpolation(vector<Matrix>& original_video, vector<Matrix>& new_fr
 }
 
 
-/*
-void convert_to_video_and_save(vector<Matrix>& generated_video_frames, string output_file, int frame_rate, int width, int height)
-{
-	VideoWriter output_video;
-	Size size(width, height);
-	//cout << "1" << endl;
-	output_video.open(output_file, CV_FOURCC('M','J','P','G'), frame_rate, size, 0);
-	//cout << "width: " << width << " height: " << height << endl;
-	//cout << "2" << endl;
-	for (Matrix& frame : generated_video_frames) {
-		Mat opencv_frame = convert_to_opencv_frame(frame, size);
-		//cout << "3" << endl;
-		output_video.write(opencv_frame);
-		//cout << "4" << endl;
-	}
-}
-
-
-
-Mat convert_to_opencv_frame(Matrix& frame, Size size)
-{
-	Mat opencv_frame(size, CV_8U);
-	//cout << "cols: " << opencv_frame.cols << " rows: " << opencv_frame.rows << endl;
-	
-	for (int i = 0; i < frame.rows(); i++) {
-		for(int j = 0; j < frame.cols(); j++) {
-			//double pixel = (double)frame_cv_g.at<unsigned char>(i,j);
-			//cout << (double)frame(j, i) << " ";
-			opencv_frame.at<unsigned char>(i, j) = frame(j, i);
-		}
-		cout << endl;
-	}
-
-	//imshow("asd", opencv_frame);
-	//waitKey(0);
-}
-*/
 
 vector<Matrix> load_video(string input_file){
 	ifstream file(input_file.c_str());
@@ -297,4 +260,38 @@ double ECM(Matrix& frame1, Matrix& frame2)
 double PSNR(Matrix& frame1, Matrix& frame2)
 {
 	return 10*log10((255*255) / ECM(frame1, frame2));
+}
+
+vector<Matrix> copy_without_some_frames(vector<Matrix>& original_video, int frames_toAdd){
+	vector<Matrix> new_video;
+	
+	for (int i = 0; i < original_video.size(); i+=frames_toAdd+1)
+	{
+		new_video.push_back(original_video[i].clone());
+	}
+
+	return new_video;
+
+}
+
+vector<double> ecm_interpolated_vs_original(vector<Matrix>& original_video, vector<Matrix>& new_video, int frames_toAdd){
+	cout << "Checking ECM" << endl;
+	vector<double> ecms;
+
+	for (int i = 0; i < new_video.size(); ++i)
+	{
+		ecms.push_back(ECM(original_video[i+1 + (i/frames_toAdd)], new_video[i]));
+	}
+	return ecms;
+}
+
+vector<double> psnr_interpolated_vs_original(vector<Matrix>& original_video, vector<Matrix>& new_video, int frames_toAdd){
+	cout << "Checking PSNR" << endl;
+	vector<double> psnrs;
+
+	for (int i = 0; i < new_video.size(); ++i)
+	{
+		psnrs.push_back(PSNR(original_video[i+1 + (i/frames_toAdd)], new_video[i]));
+	}
+	return psnrs;
 }

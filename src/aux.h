@@ -22,4 +22,8 @@ void save_video(string output_file, int numberOfFrames, int height, int width, i
 unsigned char evaluate_pol(unsigned char a, double b, double c, double d, double diff_x_xj);
 double ECM(Matrix& frame1, Matrix& frame2);
 double PSNR(Matrix& frame1, Matrix& frame2);
+vector<Matrix> copy_without_some_frames(vector<Matrix>& original_video, int frames_toAdd);
+vector<double> ecm_interpolated_vs_original(vector<Matrix>& original_video, vector<Matrix>& new_video, int frames_toAdd);
+vector<double> psnr_interpolated_vs_original(vector<Matrix>& original_video, vector<Matrix>& new_video, int frames_toAdd);
+
 //Mat convert_to_opencv_frame(Matrix& frame, Size size);
