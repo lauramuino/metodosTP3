@@ -1,2 +1,11 @@
 \section{Introducción}
-%Ponga aqui la introduccion
+
+El objetivo de este trabajo es crear un método que dado un video devuelva otro exactamente igual en cámara lenta. La técnica base que se utiliza para producir este efecto, es la de rellenar el video original con frames generados a partir de frames del mismo.\\
+
+Se utilizan tres métodos para generar los frames de relleno:
+\begin{itemize}
+\item Método del vecino más cercano, copia los pixeles del frame más cercano.
+\item Método de interpolación lineal, es el método de interpolación fragmentaria que utiliza polinomios lineales para aproximar los pixeles.
+\item Método de interpolación cúbica, al igual que la interpolación lineal, es fragmentaria, sin embargo utiliza polinomios cúbicos para aproximar los frames a generar.
+\end{itemize}
+

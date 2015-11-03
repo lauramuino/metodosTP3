@@ -38,29 +38,46 @@ int main(int argc, char* argv[])
 	int method = stoi(argv[3]);
 	int frames_toAdd = stoi(argv[4]);
 
-	vector<Matrix> video_frames;
-	vector<Matrix> generated_video_frames;
-
+	vector<Matrix> video_frames; // frames del video original
+	vector<Matrix> generated_video_frames; // frames generados (sin los originales)
+	
 	video_frames = load_video(input_file);
+/*
+cout << "method " << method << endl;
+cout << "numberOfFrames " << numberOfFrames << endl;
+cout << "height " << height << endl;
+cout << "width " << width << endl;
+cout << "frame_rate " << frame_rate << endl;
+cout << "frames_toAdd " << frames_toAdd << endl;
+*/
 
-	Matrix nullframe(height,width);
-	for (int i = 0; i < numberOfFrames*frames_toAdd; i++)
-		generated_video_frames.push_back(nullframe);
-
-cout << "method: " << method << endl;
-cout.flush();
+	if(method != 0){
+		 // frame nulo para reservar espacio para los frames interpolados
+		Matrix nullframe(height,width);
+		for (int i = 0; i < numberOfFrames*frames_toAdd; i++){
+			generated_video_frames.push_back(nullframe);
+		}
+	}
 	switch (method) {
 		case 0:	
+				cout << "Metodo por Copia" << endl;
+				genByCopy(video_frames, generated_video_frames, frames_toAdd);
 				break;
-		case 1: linear_interpolation(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
+		case 1: 
+				cout << "Metodo Interpolacion Lineal" << endl;
+				linear_interpolation(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
 				break;
-		case 2: spline_method(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
+		case 2: 
+				cout << "Metodo Interpolacion Splines" << endl;
+				spline_method(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
 				break;
-		default: cout << "Metodo incorrecto (se ingreso " << method << ")" << endl;
+		default: 
+				cout << "Metodo incorrecto (se ingreso " << method << ")" << endl;
 				exit(1);
 	}
 
-
+cout << "Saving to File" << endl;
+save_video(output_file, numberOfFrames, height, width, frame_rate, frames_toAdd, video_frames, generated_video_frames);
 
 /*
 	Video video(input_file);
@@ -80,22 +97,10 @@ cout.flush();
 	for (int i = 0; i < numberOfFrames; ++i){
 		video.siguienteFrame(video_frames[i]);
 	}
-*/	
-/*
-	switch (method) {
-		case 0:	
-				break;
-		case 1: linear_interpolation(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
-				break;
-		case 2: spline_method(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
-				break;
-		default: cout << "Metodo incorrecto (se ingreso " << method << ")" << endl;
-				exit(1);
-	}
-*/
 
-	//convert_to_video_and_save(video_frames, output_file, frame_rate, width, height);
-	//convert_to_video_and_save(generated_video_frames, output_file, frame_rate, width, height);
+	convert_to_video_and_save(video_frames, output_file, frame_rate, width, height);
+	convert_to_video_and_save(generated_video_frames, output_file, frame_rate, width, height);
+*/	
 
 	return 0;
 }

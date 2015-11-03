@@ -6,9 +6,6 @@ extern int width;
 extern int frame_rate;
 extern int frames_toAdd;
 
-
-
-
 //muestra la data del video en formato texto
 void show_video(vector<Matrix> v){
 	for(int i = 0; i < v.size(); i++){
@@ -18,7 +15,6 @@ void show_video(vector<Matrix> v){
 	cout << endl;
 } 
 
-
 //metodo de vecino mas cercano
 void genByCopy(vector<Matrix>& original_video, vector<Matrix>& new_frames, int frames_toAdd){
 	for (int i = 0; i < original_video.size() ; ++i)
@@ -26,6 +22,7 @@ void genByCopy(vector<Matrix>& original_video, vector<Matrix>& new_frames, int f
 		if(i>0 && i< original_video.size()-1 ){ // soy un frame del medio
 			for (int j = 0; j < frames_toAdd; ++j)
 				new_frames.push_back(original_video[i].clone());
+				//new_frames.[i+j] = original_video[i].clone();
 		}else if(i==0){ // soy el primer frame
 			for (int j = 0; j < frames_toAdd/2; ++j)
 				new_frames.push_back(original_video[i].clone());
@@ -63,7 +60,6 @@ cout << "frames_toAdd " << frames_toAdd << endl;
 	{
 		for (int j = 0; j < width; ++j)
 		{
-			//cout << "pixel (" << i << ", " << j << ")" << endl;
 			for (int frame = 0; frame < numberOfFrames-1; ++frame){ //para cada frame
 				h[frame] = (double)(1.0/ (double) frame_rate); //consideramos los x como el tiempo
 			} 
@@ -88,7 +84,6 @@ cout << "frames_toAdd " << frames_toAdd << endl;
 				c[frame] = z[frame] - mu[frame]*c[frame+1];
 				b[frame] = ((original_video[frame+1](i,j) - original_video[frame](i,j))/h[frame]  ) - ( h[frame] * (c[frame+1] + 2*c[frame]) /3 ) ;
 				d[frame] = (c[frame+1] - c[frame]) / (3*h[frame]);
-
 				//cout << "Polinomio para frame " << frame << " pixel (" << i << ", " << j << "): " << "a: " << +original_video[frame](i,j) << " b: " << b[frame] << " c: " << c[frame] << " d: " << d[frame] << endl;
 			}
 
@@ -99,7 +94,6 @@ cout << "frames_toAdd " << frames_toAdd << endl;
 					new_frames[frame*frames_toAdd+add](i, j) = evaluate_pol(original_video[frame](i,j), b[frame], c[frame], d[frame], (add+1)*(h[frame]/(frames_toAdd+1)) ); 
 				}
 			}
-
 		}
 	}
 }
@@ -113,17 +107,10 @@ unsigned char evaluate_pol(unsigned char a, double b, double c, double d, double
 	}else{
 		return (unsigned char) res;
 	}
-
 } 
 
 void linear_interpolation(vector<Matrix>& original_video, vector<Matrix>& new_frames, int frames_toAdd, int frame_rate, int numberOfFrames, int height, int width)
 {
-cout << "numberOfFrames " << numberOfFrames << endl;
-cout << "height " << height << endl;
-cout << "width " << width << endl;
-cout << "frame_rate " << frame_rate << endl;
-cout << "frames_toAdd " << frames_toAdd << endl;
-
 	double lambda;
 	unsigned char new_pixel;
 	//para cada pixel
@@ -242,23 +229,72 @@ cout << "frame_rate " << frame_rate << endl;
 
 
 
-void save_video(string output_file, int numberOfFrames, int height, int width, int frame_rate, vector<Matrix>& video)
+void save_video(string output_file, int numberOfFrames, int height, int width, int frame_rate, int frames_toAdd, vector<Matrix>& original_video, vector<Matrix>& new_video)
 {
 	ofstream f(output_file);
-
-	f << numberOfFrames << endl;
-	f << height << "," << width << endl; //formato infesto
+/*
+cout << "numberOfFrames " << numberOfFrames << endl;
+cout << "height " << height << endl;
+cout << "width " << width << endl;
+cout << "frame_rate " << frame_rate << endl;
+*/
+	f << numberOfFrames + (numberOfFrames-1)*frames_toAdd << endl;
+	f << height << " " << width << endl; //formato infesto
 	f << frame_rate << endl;
 
-	for (Matrix& frame : video) {
+	for (int frame = 0; frame < original_video.size(); ++frame){
+		//escribo un frame original
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
 				if (j != width-1)
-					f << (double)frame(i,j) << ", ";
+					f << (double)original_video[frame](i,j) << " ";
 				else
-					f << (double)frame(i,j);	//si es la ultima linea
+					f << (double)original_video[frame](i,j);	//si es la ultima linea
 			}
+		f << endl;
+		}
+		//escribo frames_toAdd frames (los interpolados)
+		for (int add = 0; add < frames_toAdd && frame < original_video.size()-1; ++add)
+		{
+			//escribo un frame de los interpolados
+			for (int i = 0; i < height; i++) {
+				for (int j = 0; j < width; j++) {
+					if (j != width-1)
+						f << (double)new_video[frame*frames_toAdd+add](i,j) << " ";
+					else
+						f << (double)new_video[frame*frames_toAdd+add](i,j);	//si es la ultima linea
+				}
 			f << endl;
+			}
+		}
+		
+	}
+}
+
+
+
+double ECM(Matrix& frame1, Matrix& frame2)
+{
+	assert(frame1.cols() == frame2.cols() && frame1.rows() == frame2.rows());
+
+	int m = frame1.rows();
+	int n = frame1.cols();
+	double acum = 0;
+
+	for (int i = 0; i < m; i++) {
+		for (int j = 0; j < n; j++) {
+			acum += pow(abs(frame1(i,j) - frame2(i,j)), 2); 
 		}
 	}
+
+	acum *= 1.0/(double)(n*m);
+
+	return acum;
+}
+
+
+
+double PSNR(Matrix& frame1, Matrix& frame2)
+{
+	return 10*log10((255*255) / ECM(frame1, frame2));
 }

@@ -1,2 +1,5 @@
 \section{Desarrollo}
-%Ponga aqui el desarrollo
+
+\subsection{Interpolación cúbica o splines}
+
+Para las posiciones (i,j) de todos los frames del video, generamos los puntos intermedios a estos con splines, y asi generar las matrices de relleno posición a posición. Los puntos de interpolación $x_{0} .. x_{n}$ representan el tiempo en el que cada frame es reproducido, esto esta ligado con el framerate del video original.

@@ -11,7 +11,8 @@ def build():
 
 def compile():
   for source in sources:
-    run(compiler, '-std=c++11', '-L/usr/local/libopencv_core.so', '-L/usr/local/lib/libopencv_video.so', '-L/usr/local/lib/libopencv_highgui.so', '-L/usr/local/lib/libopencv_imgproc.so', '-c', source+'.cpp', '-o', source+'.o')
+    # '-L/usr/local/libopencv_core.so', '-L/usr/local/lib/libopencv_video.so', '-L/usr/local/lib/libopencv_highgui.so', '-L/usr/local/lib/libopencv_imgproc.so',
+    run(compiler, '-std=c++11', '-c', source+'.cpp', '-o', source+'.o')
 
 def link():
   objects = [s+'.o' for s in sources]
