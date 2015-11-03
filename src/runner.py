@@ -12,7 +12,7 @@ import os
 # python runner.py data/funnybaby.avi data/funnybaby_slow_.avi 0 1
 #########################
 
-if(len(sys.argv) < 2):
+if(len(sys.argv) < 3):
 	print "Use:"
 	print "runner.py <original_video.avi/mp4> <generated_video.avi/mp4> method framesToAdd"
 	quit()
@@ -32,8 +32,8 @@ if( not os.path.exists(videotxt) ):
 # si method es 'all' corro para los tres metodos
 if method=="all":
 	for meth in xrange(0,3):
-		os.system("./tp " + videotxt + " "+ videoProctxt+"_m_" + str(meth) + " " +  str(meth) + " " + framesToAdd )
-		os.system("python tools-python-tp3/textfileToVideo.py " + videoProctxt+"_m_" + str(meth) + " " +  videoOutFilename + "_m_" + str(meth))
+		os.system("./tp " + videotxt + " "+ videoProctxt+"_m_" + str(meth) + "_ " +  str(meth) + " " + framesToAdd )
+		os.system("python tools-python-tp3/textfileToVideo.py " + videoProctxt+"_m_" + str(meth) + "_ " +  videoOutFilename + "_m_" + str(meth) + ".avi")
 # sino corro con los params dados
 else:
 	os.system("./tp " + videotxt +" "+ videoProctxt + " " +  method + " " + framesToAdd )
