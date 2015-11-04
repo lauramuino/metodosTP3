@@ -93,4 +93,8 @@ $$ \frac{3}{h_{j}} (a_{j+1} - a_{j}) - \frac{3}{h_{j-1}} (a_{j} - a_{j-1}) = 2h_
  \frac{3}{h_{j}} (a_{j+1} - a_{j}) - \frac{3}{h_{j-1}} (a_{j} - a_{j-1}) = 2c_{j}(h_{j-1} + h_{j}) + h_{j-1}c_{j-1} + h_{j}c_{j+1} 
 \end{equation}
 
-$\forall j \in (1, n-1)$. La única incógnita de este sistema son los ${c_{j}}_{j=0}^{n}$. Los valores %$\left{ h_{j}\right}$.
+$\forall j \in (1, n-1)$. \\
+
+Las incógnitas de este sistema son los $\{c_{j}\}_{j=0}^{n}$. Los valores $\{ h_{j}\}_{j=0}^{n-1}$ y $\{ a_{j}\}_{j=0}^{n}$ están dados respectivamente por el espacio entre los puntos $\{x_{j}\}_{j=0}^{n}$ y los valores de f valuada en ellos. Una vez que los valores de $\{c_{j}\}_{j=0}^{n}$ son determinados, solo resta despejar $\{b_{j}\}_{j=0}^{n-1}$ de la ecuación \ref{eq:ecuacion3.20} y los $\{d_{j}\}_{j=0}^{n-1}$ de la ecuación \ref{eq:ecuacion3.17}. Con lo cual construimos los polinomios cúbicos $\{S_{j}(x)\}_{j=0}^{n-1}$. \\
+
+El sistema planteado para buscar los valores $\{c_{j}\}_{j=0}^{n}$ los encuentra y además son únicos. La prueba de esto está formalizada en el libro Burden.
