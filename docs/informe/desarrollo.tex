@@ -4,12 +4,12 @@
 El algoritmo es bastante simple, cada frame a agregar, es la copia exacta de su frame vecino más cercano.\\
 
 \subsection{Interpolación lineal}
-Equivale a encontrar los n-1 polinomios de primer grado $S_{j}$ que pasan por los puntos distintos $(x_{j},f(x_{j}))(x_{j+1},f(x_{j+1}))$ $\forall j \in (0,n-2)$.\\
+Equivale a encontrar los n-1 polinomios de primer grado $S_{j}$ que pasan por los puntos distintos $(x_{j},f(x_{j}))$ y $(x_{j+1},f(x_{j+1}))$ $\forall j \in (0,n-2)$.\\
 En nuestro caso definimos los puntos $x_{0}, ... , x_{n-1}$ como el tiempo en que cada frame es reproducido, con lo cual son distintos. Los valores en cada $x_{j}$ equivalen al valor de un pixel del j-ésimo frame. Es decir, se generan para cada pixel (i,j) de los n frames, n-1 polinomios.\\
 
 
 \subsection{Interpolación cúbica o splines}
-%Suponemos que la cantidad de frames totales (originales) es n+1, para que los índices queden bonitos.
+%SUPONEMOS QUE LA CANTIDAD DE FRAMES TOTALES (ORIGINALES) ES N+1, PARA QUE LOS ÍNDICES QUEDEN BONITOS.
 
 Al igual que en el método de interpolación lineal, para las posiciones (i,j) de todos los frames del video, generamos los puntos intermedios a estos con splines, y asi generar las matrices de relleno posición a posición. Los puntos de interpolación $x_{0} .. x_{n}$ siguen representando el tiempo en el que cada frame es reproducido, esto está ligado con el framerate del video original.\\
 
@@ -32,16 +32,65 @@ Dada una función f: [a, b] y un grupo de nodos $a= x_{0} < x_{1} < … < x_{n} 
 
 En general la segunda condición del punto f) provee una aproximación más precisa porque incluye más información, sin embargo requeire los valores de la derivada de f en los puntos de aproximación o una aproximación precisa de esos valores. Por esa razón, nos enfocaremos en realizar un spline natural.\\
 
-Construimos el spline, aplicamos las condiciones de la definición a los polinomios cúbicos
+\newpage
 
-$$S_{j}(x) = a_{j} + b_{j} (x - x_{j}) + c_{j} (x - x_{j})^{2} + d_{j} (x - x_{j})^{3}$$
+Construimos el spline aplicando las condiciones de la definición a los polinomios cúbicos\\ $S_{j}(x) = a_{j} + b_{j} (x - x_{j}) + c_{j} (x - x_{j})^{2} + d_{j} (x - x_{j})^{3}$ $\forall j \in (0, n-1)$.\\
+Como $S_{j}$ = $a_{j}$ = $f(x_{j})$, la condición c) puede ser aplicada para obtener $ a_{j+1} = S_{j+1}(x_{j+1}) = S_{j}(x_{j+1}) = a_{j} + b_{j} (x_{j+1} - x_{j}) + c_{j} (x_{j+1} - x_{j})^{2} + d_{j} (x_{j+1} - x_{j})^{3}$ $\forall j \in (0, n-2)$.\\
 
-\forall j \in (0, n-1). Como $S_{j}$ = $a_{j}$ = $f(x_{j})$, la condición c) puede ser aplicada para obtener
+Los términos $ x_{j+1} - x_{j} $ los renombraremos con la variable $h_{j}$ $\forall j \in (0, n-2)$ para mayor claridad. Si además llamamos $a_{n} = f(x_{n})$, entonces la ecuación
 
-$$ a_{j+1} = S_{j+1}(x_{j+1}) = S_{j}(x_{j+1}) = a_{j} + b_{j} (x_{j+1} - x_{j}) + c_{j} (x_{j+1} - x_{j})^{2} + d_{j} (x_{j+1} - x_{j})^{3}$$
+\begin{equation} \label{eq:ecuacion3.15}
+a_{j+1} = a_{j} + b_{j} h_{j} + c_{j} h_{j}^{2} + d_{j} h_{j}^{3} 
+\end{equation}
 
-\forall j \in (0, n-2). Los terminos $ x_{j+1} - x_{j} $ los reenombraremos con la variable $h_{j}$ \forall j \in (0, n-2) para mayor claridad. Si además llamamos $a_{n} = f(x_{n})$, entonces la ecuación
-$$a_{j+1} = a_{j} + b_{j} h_{j} + c_{j} h_{j}^{2} + d_{j} h_{j}^{3} $$
-vale \forall j \in (0, n-1).
+vale $\forall j \in (0, n-1)$. De manera similar, definiendo $b_{n} = S'(x_{n})$ se obtiene $S'_{j}(x) = b_{j} + 2c_{j} (x - x_{j}) + 3d_{j} (x - x_{j})^{2}$.
+Si evaluamos en $x_{j}$ obtenemos  $S'_{j}(x_{j}) = b_{j}$, $\forall j \in (0, n-1)$. Si aplicamos la condición d) obtenemos
 
-%seguir desde la pagina 166 del burden
+\begin{equation} \label{eq:ecuacion3.16}
+b_{j+1} = b_{j} + 2c_{j} h_{j} + 3d_{j} h_{j}^{2}
+\end{equation}
+
+$\forall j \in (0, n-1)$. Otra relación entre los coeficientes de $S_{j}$ se obtiene definiendo $c_{n} = S''(x_{n})/2$ y luego aplicando la condición e). Tenemos que $\forall j \in (0, n-1)$ 
+
+\begin{equation} \label{eq:ecuacion3.17}
+c_{j+1} = c_{j} + 3d_{j} h_{j}.
+\end{equation}
+
+Despejando $d_{j}$ de la ecuación \ref{eq:ecuacion3.17} y reemplazando en las ecuaciones \ref{eq:ecuacion3.15} y \ref{eq:ecuacion3.16}, obtenemos que $\forall j \in (0, n-1)$ valen:\\
+
+\begin{equation} \label{eq:ecuacion3.18}
+a_{j+1} = a_{j} + b_{j} h_{j} + \frac{h_{j}^{2}}{3} (2c_{j} + c_{j+1})
+\end{equation}
+
+y
+
+\begin{equation} \label{eq:ecuacion3.19}
+b_{j+1} = b_{j} + h_{j} (c_{j} + c_{j+1})
+\end{equation}
+
+
+Luego despejamos $b_{j}$ de la ecuación \ref{eq:ecuacion3.18} y reducimos el índice en uno, obteniendo 
+
+\begin{equation} \label{eq:ecuacion3.20}
+b_{j-1} = \frac{1}{h_{j-1}} (a_{j} - a_{j-1}) - \frac{h_{j-1}}{3} (2c_{j-1} + c_{j})                                
+\end{equation}
+
+Sustituimos $b_{j}$ y $b_{j-1}$ por sus valores correspondientes respecto a la ecuación \ref{eq:ecuacion3.19}. A continuación realizamos el despeje, para dar credibilidad a la cuestión:
+
+$$b_{j} = b_{j-1} + h_{j-1} (c_{j-1} + c_{j})$$
+
+$$\frac{1}{h_{j}} (a_{j+1} - a_{j}) - \frac{h_{j}}{3} (2c_{j} + c_{j+1}) = \frac{1}{h_{j-1}} (a_{j} - a_{j-1}) - \frac{h_{j-1}}{3} (2c_{j-1} + c_{j}) + h_{j-1} (c_{j-1} + c_{j})$$
+
+$$ \frac{1}{h_{j}} (a_{j+1} - a_{j}) - \frac{1}{h_{j-1}} (a_{j} - a_{j-1}) = \frac{h_{j}}{3} (2c_{j} + c_{j+1}) - \frac{h_{j-1}}{3} (2c_{j-1} + c_{j}) + h_{j-1} (c_{j-1} + c_{j})$$
+
+$$ \frac{3}{h_{j}} (a_{j+1} - a_{j}) - \frac{3}{h_{j-1}} (a_{j} - a_{j-1}) = h_{j} (2c_{j} + c_{j+1}) - h_{j-1} (2c_{j-1} + c_{j}) + 3h_{j-1} (c_{j-1} + c_{j}) $$
+
+$$ \frac{3}{h_{j}} (a_{j+1} - a_{j}) - \frac{3}{h_{j-1}} (a_{j} - a_{j-1}) = 2h_{j}c_{j} + h_{j}c_{j+1} - 2h_{j-1}c_{j-1} - h_{j-1}c_{j} + 3h_{j-1}c_{j-1} + 3h_{j-1}c_{j} $$
+
+$$ \frac{3}{h_{j}} (a_{j+1} - a_{j}) - \frac{3}{h_{j-1}} (a_{j} - a_{j-1}) = 2h_{j}c_{j} + h_{j}c_{j+1} + h_{j-1}c_{j-1} + 2h_{j-1}c_{j} $$
+
+\begin{equation}\label{eq:ecuacion3.21}
+ \frac{3}{h_{j}} (a_{j+1} - a_{j}) - \frac{3}{h_{j-1}} (a_{j} - a_{j-1}) = 2c_{j}(h_{j-1} + h_{j}) + h_{j-1}c_{j-1} + h_{j}c_{j+1} 
+\end{equation}
+
+$\forall j \in (1, n-1)$. La única incógnita de este sistema son los ${c_{j}}_{j=0}^{n}$. Los valores %$\left{ h_{j}\right}$.
