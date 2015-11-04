@@ -354,11 +354,16 @@ int get_interval_index(int index, vector<int> interval_divider_indexes){
 		if( index < interval_divider_indexes[i] )
 			return i;
 	}
+	// si llegue aca es que index es mayor que el frame divider y la estamos pifieando
+	assert(false && "get_interval_index no esta devolviendo un valor");
 
 }
 
 void divide_video_in_intervals(vector<Matrix> & video_frames, vector<vector<Matrix> > & video_by_intervals, vector<int> interval_divider_indexes){
 
+//	cout << "Interval divider: ";
+//	for (int i = 0; i < interval_divider_indexes.size(); ++i) cout << interval_divider_indexes[i] << " ";
+//	cout << endl;
 	//initialize interval vector
 	vector<Matrix> nullvector;
 	for (int i = 0; i < interval_divider_indexes.size(); ++i) video_by_intervals.push_back(nullvector); 
@@ -368,27 +373,36 @@ void divide_video_in_intervals(vector<Matrix> & video_frames, vector<vector<Matr
 	for (int i = 0; i < video_frames.size(); ++i)
 	{
 		int index = get_interval_index(i,interval_divider_indexes);
-
 		if(prev_index != index && i < video_frames.size()-1){
+//cout << "!Meto el frame " << i << " en el chunk " << index-1 << endl;
 			video_by_intervals[index-1].push_back(video_frames[i]);
+			//cout << endl;
 		}
 
+//cout << "Meto el frame " << i << " en el chunk " << index << endl;
 		video_by_intervals[index].push_back(video_frames[i]);
 		prev_index = index;
 	}
 
+
 }
 
 
-// !!! los indices en el vector de intervalos son los ultimos elementos de cada interrvalo
+// generate_even_interval_indexes devuelve un vector con el indice del frame donde corta, por ej, si blokc size = 8, devuelve [7,14,21..]
+// los frames del indice 0 a 7 estan en el primer chunk, los frames del indice 7 a 14 estan en el 2º frame
+// se repiten los frames de corte porque sino no se interpola entre los frames de indice 7 y 8.
+// se pushea al final el number of frames para que el indice del ultimo frame no se indefina en al funcion get_interval_index
 
 void generate_even_interval_indexes(vector<int> & interval_divider_indexes, int block_size, int numberOfFrames){
-	for (int i = block_size; i < numberOfFrames ; i+=block_size)
+
+	assert(block_size > 1 && "El block size tiene que ser de al menos 2 para poder interpolar entre los frames");
+
+	for (int i = block_size-1; i < numberOfFrames ; i+=block_size-1)
 	{
-		interval_divider_indexes.push_back(i-1);
+		interval_divider_indexes.push_back(i);
 	}
 
-	if((numberOfFrames-1)%block_size != 0) interval_divider_indexes.push_back(numberOfFrames-1);
+	if( numberOfFrames % block_size != 0) interval_divider_indexes.push_back(numberOfFrames);
 }
 
 void generate_ecm_interval_indexes(vector<Matrix> video_frames, vector<int> & interval_divider_indexes, double threshold){
@@ -398,5 +412,5 @@ void generate_ecm_interval_indexes(vector<Matrix> video_frames, vector<int> & in
 			interval_divider_indexes.push_back(i);
 	}
 
-	interval_divider_indexes.push_back(video_frames.size()-1);
+	interval_divider_indexes.push_back(video_frames.size()+1);
 }
