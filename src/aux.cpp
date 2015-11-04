@@ -192,15 +192,66 @@ cout << "frame_rate " << frame_rate << endl;
 
 
 
+void save_video(string output_file, int numberOfFrames, int height, int width, int frame_rate, int frames_toAdd, vector<int> interval_divider_indexes, vector<vector<Matrix> > & video_by_intervals, vector<vector<Matrix> > & generated_video_by_intervals)
+{
+
+
+
+
+	ofstream f("salidadeprueba.txt");
+
+	f << numberOfFrames + (numberOfFrames-1)*frames_toAdd << endl;
+	f << height << " " << width << endl; //formato infesto
+	f << frame_rate << endl;
+
+int sum=0;
+	//for each video interval
+	for(int k = 0; k < video_by_intervals.size();++k){
+sum+=generated_video_by_intervals[k].size();
+		for (int frame = 0; frame < video_by_intervals[k].size(); ++frame){
+
+			//escribo un frame original
+			for (int i = 0; i < height; i++) {
+				for (int j = 0; j < width; j++) {
+					if (j != width-1)
+						f << (double)video_by_intervals[k][frame](i,j) << " ";
+					else
+						f << (double)video_by_intervals[k][frame](i,j);	//si es la ultima linea
+				}
+			f << endl;
+			}
+			//escribo frames_toAdd frames (los interpolados)
+			for (int add = 0; add < frames_toAdd && frame < video_by_intervals[k].size()-1; ++add)
+			{
+				//escribo un frame de los interpolados
+				for (int i = 0; i < height; i++) {
+					for (int j = 0; j < width; j++) {
+						if (j != width-1)
+							f << (double)generated_video_by_intervals[k][frame*frames_toAdd+add](i,j) << " ";
+						else
+							f << (double)generated_video_by_intervals[k][frame*frames_toAdd+add](i,j);	//si es la ultima linea
+					}
+				f << endl;
+				}
+			}
+		}
+	}
+	cout<<"AAAA "<<sum<<endl;
+
+}
+
+
+
+/*  //VIEJO
 void save_video(string output_file, int numberOfFrames, int height, int width, int frame_rate, int frames_toAdd, vector<Matrix>& original_video, vector<Matrix>& new_video)
 {
 	ofstream f(output_file);
-/*
-cout << "numberOfFrames " << numberOfFrames << endl;
-cout << "height " << height << endl;
-cout << "width " << width << endl;
-cout << "frame_rate " << frame_rate << endl;
-*/
+
+//cout << "numberOfFrames " << numberOfFrames << endl;
+//cout << "height " << height << endl;
+//cout << "width " << width << endl;
+//cout << "frame_rate " << frame_rate << endl;
+
 	f << numberOfFrames + (numberOfFrames-1)*frames_toAdd << endl;
 	f << height << " " << width << endl; //formato infesto
 	f << frame_rate << endl;
@@ -233,7 +284,7 @@ cout << "frame_rate " << frame_rate << endl;
 		
 	}
 }
-
+*/
 
 
 double ECM(Matrix& frame1, Matrix& frame2)
@@ -294,4 +345,58 @@ vector<double> psnr_interpolated_vs_original(vector<Matrix>& original_video, vec
 		psnrs.push_back(PSNR(original_video[i+1 + (i/frames_toAdd)], new_video[i]));
 	}
 	return psnrs;
+}
+
+int get_interval_index(int index, vector<int> interval_divider_indexes){
+	int res = 0;
+	for (int i = 0; i < interval_divider_indexes.size(); ++i)
+	{
+		if( index < interval_divider_indexes[i] )
+			return i;
+	}
+
+}
+
+void divide_video_in_intervals(vector<Matrix> & video_frames, vector<vector<Matrix> > & video_by_intervals, vector<int> interval_divider_indexes){
+
+	//initialize interval vector
+	vector<Matrix> nullvector;
+	for (int i = 0; i < interval_divider_indexes.size(); ++i) video_by_intervals.push_back(nullvector); 
+
+	//fill intervals vector
+	int prev_index = 0;
+	for (int i = 0; i < video_frames.size(); ++i)
+	{
+		int index = get_interval_index(i,interval_divider_indexes);
+
+		if(prev_index != index && i < video_frames.size()-1){
+			video_by_intervals[index-1].push_back(video_frames[i]);
+		}
+
+		video_by_intervals[index].push_back(video_frames[i]);
+		prev_index = index;
+	}
+
+}
+
+
+// !!! los indices en el vector de intervalos son los ultimos elementos de cada interrvalo
+
+void generate_even_interval_indexes(vector<int> & interval_divider_indexes, int block_size, int numberOfFrames){
+	for (int i = block_size; i < numberOfFrames ; i+=block_size)
+	{
+		interval_divider_indexes.push_back(i-1);
+	}
+
+	if((numberOfFrames-1)%block_size != 0) interval_divider_indexes.push_back(numberOfFrames-1);
+}
+
+void generate_ecm_interval_indexes(vector<Matrix> video_frames, vector<int> & interval_divider_indexes, double threshold){
+	for (int i = 0; i < video_frames.size()-1; ++i)
+	{
+		if(ECM(video_frames[i], video_frames[i+1])>threshold)
+			interval_divider_indexes.push_back(i);
+	}
+
+	interval_divider_indexes.push_back(video_frames.size()-1);
 }

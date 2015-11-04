@@ -11,6 +11,9 @@ int width;
 int frame_rate;
 int frames_toAdd;
 
+int generate_interval_method = 0;
+double threshold = 300;
+int block_size = 8;
 
 /*
 En la primera liınea esta la cantidad de cuadros que tiene el video (c)
@@ -39,9 +42,9 @@ int main(int argc, char* argv[])
 	int method = stoi(argv[3]);
 	int frames_toAdd = stoi(argv[4]);
 	bool error_check = false;
-	vector<Matrix> video_frames; // frames del video a procesar
 	vector<Matrix> original_video_frames; // frames del video original
-	vector<Matrix> generated_video_frames; // frames generados (sin los originales)
+	vector<Matrix> video_frames; // frames del video a procesar
+
 
 	// cargamos el video original
 	// si vamos a comparar por ECM, tenemos que sacar frames
@@ -60,55 +63,86 @@ int main(int argc, char* argv[])
 		video_frames = load_video(input_file);
 	}
 
-/*
-cout << "method " << method << endl;
-cout << "numberOfFrames " << numberOfFrames << endl;
-cout << "height " << height << endl;
-cout << "width " << width << endl;
-cout << "frame_rate " << frame_rate << endl;
-cout << "frames_toAdd " << frames_toAdd << endl;
-*/
 
 	cout << "Frames to Add: " << frames_toAdd << endl;
-	// inicializamos el vector de los frames interpolados si el metodo es lineal o splines
-	if(method != 0){
-		// frame nulo para reservar espacio para los frames interpolados
-		Matrix nullframe(height,width);
-		for (int i = 0; i < numberOfFrames*frames_toAdd; i++){
-			generated_video_frames.push_back(nullframe);
+
+	vector<int> interval_divider_indexes;
+
+	if(generate_interval_method == 0){
+		generate_even_interval_indexes(interval_divider_indexes, block_size, numberOfFrames);
+	}else{
+		generate_ecm_interval_indexes(video_frames, interval_divider_indexes, threshold);
+	}
+
+	vector<vector<Matrix> > video_by_intervals;
+	vector<vector<Matrix> > generated_video_by_intervals;
+
+	divide_video_in_intervals(video_frames, video_by_intervals, interval_divider_indexes);
+/*
+	for (int i = 0; i < video_by_intervals.size(); ++i)
+	{
+		save_video(to_string(i), video_by_intervals[i].size(), height, width, frame_rate, 0, video_by_intervals[i], generated_video_frames);
+		
+	}
+*/
+	for (int i = 0; i < video_by_intervals.size(); ++i){
+		vector<Matrix> generated_video_frames; // frames generados (sin los originales)
+		
+		video_frames = video_by_intervals[i];
+
+
+
+		numberOfFrames = video_frames.size();
+cout<<"numberofframes "<<numberOfFrames<<endl;
+		// inicializamos el vector de los frames interpolados si el metodo es lineal o splines
+		if(method != 0){
+			// frame nulo para reservar espacio para los frames interpolados
+			Matrix nullframe(height,width);
+			for (int i = 0; i < numberOfFrames*frames_toAdd; i++){
+				generated_video_frames.push_back(nullframe);
+			}
 		}
+
+		switch (method) {
+			case 0:	
+					cout << "Metodo por Copia" << endl;
+					genByCopy(video_frames, generated_video_frames, frames_toAdd);
+					break;
+			case 1: 
+					cout << "Metodo Interpolacion Lineal" << endl;
+					linear_interpolation(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
+					break;
+			case 2: 
+					cout << "Metodo Interpolacion Splines" << endl;
+					spline_method(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
+					break;
+			default: 
+					cout << "Metodo incorrecto (se ingreso " << method << ")" << endl;
+					exit(1);
+		}
+
+
+
+		generated_video_by_intervals.push_back(generated_video_frames);
+cout<<"AAA bb"<<generated_video_frames.size()<<endl;
+
+		if(error_check){
+			vector<double> ecms = ecm_interpolated_vs_original(original_video_frames, generated_video_frames, frames_toAdd);
+			vector<double> psnrs = psnr_interpolated_vs_original(original_video_frames, generated_video_frames, frames_toAdd);
+			for (int i = 0; i < ecms.size(); ++i)
+				cout << "New Frame " << i << " - ECM: " << ecms[i] << endl;
+			for (int i = 0; i < ecms.size(); ++i)
+				cout << "New Frame " << i << " - PSNR: " << psnrs[i] << endl;
+		}
+
 	}
 
-	switch (method) {
-		case 0:	
-				cout << "Metodo por Copia" << endl;
-				genByCopy(video_frames, generated_video_frames, frames_toAdd);
-				break;
-		case 1: 
-				cout << "Metodo Interpolacion Lineal" << endl;
-				linear_interpolation(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
-				break;
-		case 2: 
-				cout << "Metodo Interpolacion Splines" << endl;
-				spline_method(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
-				break;
-		default: 
-				cout << "Metodo incorrecto (se ingreso " << method << ")" << endl;
-				exit(1);
-	}
+	cout << "Saving to File" << endl;
+	save_video(output_file, numberOfFrames, height, width, frame_rate, frames_toAdd, interval_divider_indexes, video_by_intervals, generated_video_by_intervals);
 
-cout << "Saving to File" << endl;
-save_video(output_file, numberOfFrames, height, width, frame_rate, frames_toAdd, video_frames, generated_video_frames);
+	//save_video(output_file, numberOfFrames, height, width, frame_rate, frames_toAdd, video_frames, generated_video_frames);
 
 
-if(error_check){
-	vector<double> ecms = ecm_interpolated_vs_original(original_video_frames, video_frames, frames_toAdd);
-	vector<double> psnrs = psnr_interpolated_vs_original(original_video_frames, video_frames, frames_toAdd);
-	for (int i = 0; i < ecms.size(); ++i)
-		cout << "New Frame " << i << " - ECM: " << ecms[i] << endl;
-	for (int i = 0; i < ecms.size(); ++i)
-		cout << "New Frame " << i << " - PSNR: " << psnrs[i] << endl;
-}
 
 	return 0;
 }
