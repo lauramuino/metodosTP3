@@ -87,7 +87,7 @@ cout << "frames_toAdd " << frames_toAdd << endl;
 				//cout << "Polinomio para frame " << frame << " pixel (" << i << ", " << j << "): " << "a: " << +original_video[frame](i,j) << " b: " << b[frame] << " c: " << c[frame] << " d: " << d[frame] << endl;
 			}
 
-			for (int frame = 0; frame < numberOfFrames; ++frame)
+			for (int frame = 0; frame < numberOfFrames-1; ++frame)
 			{
 				for (int add = 0; add < frames_toAdd; ++add)
 				{
@@ -361,9 +361,9 @@ int get_interval_index(int index, vector<int> interval_divider_indexes){
 
 void divide_video_in_intervals(vector<Matrix> & video_frames, vector<vector<Matrix> > & video_by_intervals, vector<int> interval_divider_indexes){
 
-//	cout << "Interval divider: ";
-//	for (int i = 0; i < interval_divider_indexes.size(); ++i) cout << interval_divider_indexes[i] << " ";
-//	cout << endl;
+	cout << "Interval divider: ";
+	for (int i = 0; i < interval_divider_indexes.size(); ++i) cout << interval_divider_indexes[i] << " ";
+	cout << endl;
 	//initialize interval vector
 	vector<Matrix> nullvector;
 	for (int i = 0; i < interval_divider_indexes.size(); ++i) video_by_intervals.push_back(nullvector); 
@@ -373,18 +373,17 @@ void divide_video_in_intervals(vector<Matrix> & video_frames, vector<vector<Matr
 	for (int i = 0; i < video_frames.size(); ++i)
 	{
 		int index = get_interval_index(i,interval_divider_indexes);
+		//cout << "index: " << index << endl;
 		if(prev_index != index && i < video_frames.size()-1){
-//cout << "!Meto el frame " << i << " en el chunk " << index-1 << endl;
+cout << "!Meto el frame " << i << " en el chunk " << index-1 << endl;
 			video_by_intervals[index-1].push_back(video_frames[i]);
-			//cout << endl;
+			cout << endl;
 		}
 
-//cout << "Meto el frame " << i << " en el chunk " << index << endl;
+cout << "Meto el frame " << i << " en el chunk " << index << endl;
 		video_by_intervals[index].push_back(video_frames[i]);
 		prev_index = index;
 	}
-
-
 }
 
 
@@ -406,11 +405,12 @@ void generate_even_interval_indexes(vector<int> & interval_divider_indexes, int 
 }
 
 void generate_ecm_interval_indexes(vector<Matrix> video_frames, vector<int> & interval_divider_indexes, double threshold){
-	for (int i = 0; i < video_frames.size()-1; ++i)
+	for (int i = 1; i < video_frames.size()-1; ++i)
 	{
+		cout << ECM(video_frames[i], video_frames[i+1]) << endl;
 		if(ECM(video_frames[i], video_frames[i+1])>threshold)
 			interval_divider_indexes.push_back(i);
 	}
 
-	interval_divider_indexes.push_back(video_frames.size()+1);
+	interval_divider_indexes.push_back(video_frames.size());
 }

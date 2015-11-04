@@ -12,7 +12,7 @@ int frame_rate;
 int frames_toAdd;
 
 int generate_interval_method = 0;
-double threshold = 300;
+double threshold = 200;
 int block_size = 8;
 
 /*
@@ -66,39 +66,38 @@ int main(int argc, char* argv[])
 
 	cout << "Frames to Add: " << frames_toAdd << endl;
 
+	// vector de indices de donde se divide el video a procesar
 	vector<int> interval_divider_indexes;
 
+	// guardo en interval_divider_indexes los indices donde termina un chunk de video, dependiendo de que usemos
 	if(generate_interval_method == 0){
+		// Dividimos el video en bloques de igual tamaño (excepto el ultimo si no es multiplo de la cantidad de frames)
 		generate_even_interval_indexes(interval_divider_indexes, block_size, numberOfFrames);
 	}else{
+		// Dividimos el video de acuerdo a si encontramos una diferencia grande de ECM entre dos frames
 		generate_ecm_interval_indexes(video_frames, interval_divider_indexes, threshold);
 	}
 
-	vector<vector<Matrix> > video_by_intervals;
-	vector<vector<Matrix> > generated_video_by_intervals;
 
-	divide_video_in_intervals(video_frames, video_by_intervals, interval_divider_indexes);
-/*
-	for (int i = 0; i < video_by_intervals.size(); ++i)
-	{
-		save_video(to_string(i), video_by_intervals[i].size(), height, width, frame_rate, 0, video_by_intervals[i], generated_video_frames);
-		
-	}
-*/
+	vector<vector<Matrix> > video_by_intervals; // Aca guardamos un vector de los chunks del videos a procesar (se guardan por copia)
+	vector<vector<Matrix> > generated_video_by_intervals; // Aca guardamos un vector de los frames interpolados para cada chunk de video
+
+	// divido mi video en fragmentos y lo guardo en video_by_intervals
+	divide_video_in_intervals(video_frames, video_by_intervals, interval_divider_indexes); 
+
+
+	//Para cada chunk de video, proceso ese pedazo
 	for (int i = 0; i < video_by_intervals.size(); ++i){
 		vector<Matrix> generated_video_frames; // frames generados (sin los originales)
 		
 		video_frames = video_by_intervals[i];
-
-
-
 		numberOfFrames = video_frames.size();
-cout<<"numberofframes "<<numberOfFrames<<endl;
+//cout << "Iteracion " << i << " numberOfFrames: " << numberOfFrames << endl;
 		// inicializamos el vector de los frames interpolados si el metodo es lineal o splines
 		if(method != 0){
 			// frame nulo para reservar espacio para los frames interpolados
 			Matrix nullframe(height,width);
-			for (int i = 0; i < numberOfFrames*frames_toAdd; i++){
+			for (int i = 0; i < (numberOfFrames-1)*frames_toAdd; i++){
 				generated_video_frames.push_back(nullframe);
 			}
 		}
@@ -122,10 +121,10 @@ cout<<"numberofframes "<<numberOfFrames<<endl;
 		}
 
 
-
+		// me guardo el video de los frames interpolados. Solo tiene los frames generados de forma contigua, despues hay que mergearlos con el original
 		generated_video_by_intervals.push_back(generated_video_frames);
-cout<<"AAA bb"<<generated_video_frames.size()<<endl;
-
+//cout << "Gen frames: " << generated_video_frames.size() << endl;
+		// Si queremos, chequeamos el ECM y el PSNR de los frames interpolados contra los originales
 		if(error_check){
 			vector<double> ecms = ecm_interpolated_vs_original(original_video_frames, generated_video_frames, frames_toAdd);
 			vector<double> psnrs = psnr_interpolated_vs_original(original_video_frames, generated_video_frames, frames_toAdd);
@@ -135,7 +134,8 @@ cout<<"AAA bb"<<generated_video_frames.size()<<endl;
 				cout << "New Frame " << i << " - PSNR: " << psnrs[i] << endl;
 		}
 
-	}
+	} //end for
+
 
 	cout << "Saving to File" << endl;
 	save_video(output_file, numberOfFrames, height, width, frame_rate, frames_toAdd, interval_divider_indexes, video_by_intervals, generated_video_by_intervals);
