@@ -198,7 +198,7 @@ void save_video(string output_file, int numberOfFrames, int height, int width, i
 
 
 
-	ofstream f("salidadeprueba.txt");
+	ofstream f(output_file);
 
 	f << numberOfFrames + (numberOfFrames-1)*frames_toAdd << endl;
 	f << height << " " << width << endl; //formato infesto

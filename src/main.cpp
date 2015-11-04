@@ -37,6 +37,7 @@ int main(int argc, char* argv[])
 {
 
 //cargamos los parametros
+
 	string input_file = argv[1];
 	string output_file = argv[2];
 	int method = stoi(argv[3]);
@@ -44,7 +45,7 @@ int main(int argc, char* argv[])
 	bool error_check = false;
 	vector<Matrix> original_video_frames; // frames del video original
 	vector<Matrix> video_frames; // frames del video a procesar
-
+	int original_number_of_frames;
 
 	// cargamos el video original
 	// si vamos a comparar por ECM, tenemos que sacar frames
@@ -55,12 +56,14 @@ int main(int argc, char* argv[])
 		// ajusto los parametros globales
 		numberOfFrames = video_frames.size();
 		cout << "Checking ECM" << endl;
+		original_number_of_frames = numberOfFrames;
 		// esto del frame rate no va, xq es un int y cuando da menor a 1 se rompe. Da igual
 		//frame_rate =  ((double) original_video_frames.size() / frame_rate ) / (double) video_frames.size(); // con esto hago que el video con menos frames dure lo mismo que el original, bajandole el frame_rate
 	}else{
 		// si no procesamos el video original nada mas
 		cout << "Not Checking ECM" << endl;
 		video_frames = load_video(input_file);
+		original_number_of_frames = video_frames.size();
 	}
 
 
@@ -138,7 +141,7 @@ int main(int argc, char* argv[])
 
 
 	cout << "Saving to File" << endl;
-	save_video(output_file, numberOfFrames, height, width, frame_rate, frames_toAdd, interval_divider_indexes, video_by_intervals, generated_video_by_intervals);
+	save_video(output_file, original_number_of_frames, height, width, frame_rate, frames_toAdd, interval_divider_indexes, video_by_intervals, generated_video_by_intervals);
 
 	//save_video(output_file, numberOfFrames, height, width, frame_rate, frames_toAdd, video_frames, generated_video_frames);
 
