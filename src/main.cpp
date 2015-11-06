@@ -67,7 +67,6 @@ if(argc < 6){
 		original_video_frames = load_video(input_file);
 		original_number_of_frames = original_video_frames.size();
 		video_frames = copy_without_some_frames(original_video_frames, frames_toAdd);
-		numberOfFrames = video_frames.size();
 	}else{
 		// si no procesamos el video original nada mas
 		cout << "Not Check ECM" << endl;
@@ -75,6 +74,7 @@ if(argc < 6){
 		original_number_of_frames = video_frames.size();
 	}
 
+	numberOfFrames = video_frames.size();
 	cout << "Original number of frames: " << original_number_of_frames << endl;
 	cout << "Number of frames to process: " << numberOfFrames << endl;
 
@@ -113,13 +113,13 @@ if(argc < 6){
 	for (int i = 0; i < video_by_intervals.size(); ++i){
 		vector<Matrix> generated_video_frames; // frames generados (sin los originales)
 		video_frames = video_by_intervals[i];
-		numberOfFrames = video_frames.size();
+		//video_frames.size() = video_frames.size();
 
 		// inicializamos el vector de los frames interpolados si el metodo es lineal o splines
 		if(method != 0){
 			// frame nulo para reservar espacio para los frames interpolados
 			Matrix nullframe(height,width);
-			for (int i = 0; i < (numberOfFrames-1)*frames_toAdd; i++){
+			for (int i = 0; i < (video_frames.size()-1)*frames_toAdd; i++){
 				generated_video_frames.push_back(nullframe);
 			}
 		}
@@ -131,11 +131,11 @@ if(argc < 6){
 					break;
 			case 1: 
 					cout << "Metodo Interpolacion Lineal" << endl;
-					linear_interpolation(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
+					linear_interpolation(video_frames, generated_video_frames, frames_toAdd, frame_rate, video_frames.size(), height, width);
 					break;
 			case 2: 
 					cout << "Metodo Interpolacion Splines" << endl;
-					spline_method(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
+					spline_method(video_frames, generated_video_frames, frames_toAdd, frame_rate, video_frames.size(), height, width);
 					break;	
 			default: 
 					cout << "Metodo incorrecto (se ingreso " << method << ")" << endl;
@@ -159,9 +159,10 @@ if(argc < 6){
 			cout << "New Frame " << i << " - PSNR: " << psnrs[i] << endl;
 	}
 
+	save_video(output_file, numberOfFrames, height, width, frame_rate, frames_toAdd, interval_divider_indexes, video_by_intervals, generated_video_by_intervals);
 
-	cout << "Saving to File" << endl;
-	save_video(output_file, original_number_of_frames, height, width, frame_rate, frames_toAdd, interval_divider_indexes, video_by_intervals, generated_video_by_intervals);
+
+	cout << "Saved to File" << endl;
 
 	//save_video(output_file, numberOfFrames, height, width, frame_rate, frames_toAdd, video_frames, generated_video_frames);
 

@@ -360,9 +360,9 @@ int get_interval_index(int index, vector<int> interval_divider_indexes){
 
 void divide_video_in_intervals(vector<Matrix> & video_frames, vector<vector<Matrix> > & video_by_intervals, vector<int> interval_divider_indexes){
 
-	cout << "Interval divider: ";
+//cout << "Interval divider: ";
 	for (int i = 0; i < interval_divider_indexes.size(); ++i) cout << interval_divider_indexes[i] << " ";
-	cout << endl;
+//	cout << endl;
 	//initialize interval vector
 	vector<Matrix> nullvector;
 	for (int i = 0; i < interval_divider_indexes.size(); ++i) video_by_intervals.push_back(nullvector); 
@@ -374,12 +374,12 @@ void divide_video_in_intervals(vector<Matrix> & video_frames, vector<vector<Matr
 		int index = get_interval_index(i,interval_divider_indexes);
 		//cout << "index: " << index << endl;
 		if(prev_index != index && i < video_frames.size()-1){
-cout << "!Meto el frame " << i << " en el chunk " << index-1 << endl;
+//cout << "!Meto el frame " << i << " en el chunk " << index-1 << endl;
 			video_by_intervals[index-1].push_back(video_frames[i]);
-			cout << endl;
+//			cout << endl;
 		}
 
-cout << "Meto el frame " << i << " en el chunk " << index << endl;
+//cout << "Meto el frame " << i << " en el chunk " << index << endl;
 		video_by_intervals[index].push_back(video_frames[i]);
 		prev_index = index;
 	}
