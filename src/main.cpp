@@ -11,9 +11,6 @@ int width;
 int frame_rate;
 int frames_toAdd;
 
-int generate_interval_method = 0;
-double threshold = 200;
-int block_size = 8;
 
 /*
 En la primera liınea esta la cantidad de cuadros que tiene el video (c)
@@ -38,64 +35,86 @@ int main(int argc, char* argv[])
 
 //cargamos los parametros
 
+// input.avi, output.txt, method, frames to add, check_contra_original, interval_division_method, interval_div_param
+if(argc < 6){
+	cout << "uso:" << endl;
+	cout << "./tp input.txt output.txt <method> <frames_to_add> <check_vs_original> <interval_method> <block_size_or_threshold>" << endl;
+	cout << "<method>                  (int) ===> 0 = copiar vecinos, 1 = lineal, 2 = splines" << endl;
+	cout << "<frames_to_add>           (int)" << endl;
+	cout << "<check_vs_original>       'true' 'false'  ===> saca frames del original y compara contra los interpolados" << endl;
+	cout << "<interval_method>         'block' 'ecm'   ===> divide el video por bloque o por un umbral diferenci de ECM entre 2 frames" << endl;
+	cout << "<block_size_or_threshold> (int) (float) ===> block_size - umbral para ecm" << endl;
+	return 0;
+}
 	string input_file = argv[1];
 	string output_file = argv[2];
 	int method = stoi(argv[3]);
 	int frames_toAdd = stoi(argv[4]);
-	bool error_check = false;
+	string check_contra_original = argv[5];
+	string generate_interval_method = argv[6];
+	string block_size_or_treshhold = argv[7];
+	
+
 	vector<Matrix> original_video_frames; // frames del video original
 	vector<Matrix> video_frames; // frames del video a procesar
 	int original_number_of_frames;
 
+
 	// cargamos el video original
-	// si vamos a comparar por ECM, tenemos que sacar frames
-	if(argc > 5){
-		error_check = true;
+	// si vamos a comparar los frames generados por ECM, tenemos que sacar frames del original
+	if(check_contra_original == "true"){
+		cout << "Check ECM" << endl;
 		original_video_frames = load_video(input_file);
+		original_number_of_frames = original_video_frames.size();
 		video_frames = copy_without_some_frames(original_video_frames, frames_toAdd);
-		// ajusto los parametros globales
 		numberOfFrames = video_frames.size();
-		cout << "Checking ECM" << endl;
-		original_number_of_frames = numberOfFrames;
-		// esto del frame rate no va, xq es un int y cuando da menor a 1 se rompe. Da igual
-		//frame_rate =  ((double) original_video_frames.size() / frame_rate ) / (double) video_frames.size(); // con esto hago que el video con menos frames dure lo mismo que el original, bajandole el frame_rate
 	}else{
 		// si no procesamos el video original nada mas
-		cout << "Not Checking ECM" << endl;
+		cout << "Not Check ECM" << endl;
 		video_frames = load_video(input_file);
 		original_number_of_frames = video_frames.size();
 	}
 
+	cout << "Original number of frames: " << original_number_of_frames << endl;
+	cout << "Number of frames to process: " << numberOfFrames << endl;
 
-	cout << "Frames to Add: " << frames_toAdd << endl;
+	// DIVIDIMOS EL VIDEO EN INTERVALOS
 
-	// vector de indices de donde se divide el video a procesar
+	// vector de indices de donde se divide el video a procesar. 
+	// guardo en interval_divider_indexes los indices donde termina un chunk de video, dependiendo de que usemos
+	// Si el bloque es de 4, seria <3,6,9...> porque un chunk va del frame 0 al 3, otro del 3 al 6, etc...
 	vector<int> interval_divider_indexes;
 
-	// guardo en interval_divider_indexes los indices donde termina un chunk de video, dependiendo de que usemos
-	if(generate_interval_method == 0){
+	if(generate_interval_method == "block"){ //si el metodo es por bloques
 		// Dividimos el video en bloques de igual tamaño (excepto el ultimo si no es multiplo de la cantidad de frames)
+		int block_size;
+		if(stoi(block_size_or_treshhold) < numberOfFrames){ // me fijo si el bloque es mas grande que el video en total
+			block_size = stoi(block_size_or_treshhold); 
+			cout << "Dividiendo en bloques de tamaño: " << block_size << endl;
+		} else{
+			block_size = numberOfFrames+1; // en este caso tomo el video entero en un solo bloque
+			cout << "Dividiendo en un solo bloque" << endl;
+		}
 		generate_even_interval_indexes(interval_divider_indexes, block_size, numberOfFrames);
-	}else{
-		// Dividimos el video de acuerdo a si encontramos una diferencia grande de ECM entre dos frames
+
+	}else{ 	// Sino dividimos el video de acuerdo a si encontramos una diferencia grande de ECM entre dos frames
+		double threshold = stod(block_size_or_treshhold);
 		generate_ecm_interval_indexes(video_frames, interval_divider_indexes, threshold);
 	}
-
 
 	vector<vector<Matrix> > video_by_intervals; // Aca guardamos un vector de los chunks del videos a procesar (se guardan por copia)
 	vector<vector<Matrix> > generated_video_by_intervals; // Aca guardamos un vector de los frames interpolados para cada chunk de video
 
 	// divido mi video en fragmentos y lo guardo en video_by_intervals
 	divide_video_in_intervals(video_frames, video_by_intervals, interval_divider_indexes); 
-
+	cout << "Video dividido en intervalos" << endl;
 
 	//Para cada chunk de video, proceso ese pedazo
 	for (int i = 0; i < video_by_intervals.size(); ++i){
 		vector<Matrix> generated_video_frames; // frames generados (sin los originales)
-		
 		video_frames = video_by_intervals[i];
 		numberOfFrames = video_frames.size();
-//cout << "Iteracion " << i << " numberOfFrames: " << numberOfFrames << endl;
+
 		// inicializamos el vector de los frames interpolados si el metodo es lineal o splines
 		if(method != 0){
 			// frame nulo para reservar espacio para los frames interpolados
@@ -117,27 +136,28 @@ int main(int argc, char* argv[])
 			case 2: 
 					cout << "Metodo Interpolacion Splines" << endl;
 					spline_method(video_frames, generated_video_frames, frames_toAdd, frame_rate, numberOfFrames, height, width);
-					break;
+					break;	
 			default: 
 					cout << "Metodo incorrecto (se ingreso " << method << ")" << endl;
 					exit(1);
 		}
 
-
 		// me guardo el video de los frames interpolados. Solo tiene los frames generados de forma contigua, despues hay que mergearlos con el original
 		generated_video_by_intervals.push_back(generated_video_frames);
-//cout << "Gen frames: " << generated_video_frames.size() << endl;
-		// Si queremos, chequeamos el ECM y el PSNR de los frames interpolados contra los originales
-		if(error_check){
-			vector<double> ecms = ecm_interpolated_vs_original(original_video_frames, generated_video_frames, frames_toAdd);
-			vector<double> psnrs = psnr_interpolated_vs_original(original_video_frames, generated_video_frames, frames_toAdd);
-			for (int i = 0; i < ecms.size(); ++i)
-				cout << "New Frame " << i << " - ECM: " << ecms[i] << endl;
-			for (int i = 0; i < ecms.size(); ++i)
-				cout << "New Frame " << i << " - PSNR: " << psnrs[i] << endl;
-		}
-
+	
 	} //end for
+	
+	// Si queremos, chequeamos el ECM y el PSNR de los frames interpolados contra los originales
+	if(check_contra_original == "true"){
+		// mergeamos todos los frames interpolados en un solo vector de frames (sin los originales)
+		vector<Matrix> generated_video_frames = merge_chunks(generated_video_by_intervals);
+		vector<double> ecms = ecm_interpolated_vs_original(original_video_frames, generated_video_frames, frames_toAdd);
+		vector<double> psnrs = psnr_interpolated_vs_original(original_video_frames, generated_video_frames, frames_toAdd);
+		for (int i = 0; i < ecms.size(); ++i)
+			cout << "New Frame " << i << " - ECM: " << ecms[i] << endl;
+		for (int i = 0; i < ecms.size(); ++i)
+			cout << "New Frame " << i << " - PSNR: " << psnrs[i] << endl;
+	}
 
 
 	cout << "Saving to File" << endl;

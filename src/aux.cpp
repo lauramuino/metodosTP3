@@ -195,19 +195,18 @@ cout << "frame_rate " << frame_rate << endl;
 void save_video(string output_file, int numberOfFrames, int height, int width, int frame_rate, int frames_toAdd, vector<int> interval_divider_indexes, vector<vector<Matrix> > & video_by_intervals, vector<vector<Matrix> > & generated_video_by_intervals)
 {
 
-
-
+cout << "Guardando video" << endl;
+cout << "Frames totales del nuevo video " << numberOfFrames + (numberOfFrames-1)*frames_toAdd << endl;
 
 	ofstream f(output_file);
-
 	f << numberOfFrames + (numberOfFrames-1)*frames_toAdd << endl;
 	f << height << " " << width << endl; //formato infesto
 	f << frame_rate << endl;
 
-int sum=0;
+	int sum=0;
 	//for each video interval
 	for(int k = 0; k < video_by_intervals.size();++k){
-sum+=generated_video_by_intervals[k].size();
+		sum+=generated_video_by_intervals[k].size();
 		for (int frame = 0; frame < video_by_intervals[k].size(); ++frame){
 
 			//escribo un frame original
@@ -236,7 +235,7 @@ sum+=generated_video_by_intervals[k].size();
 			}
 		}
 	}
-	cout<<"AAAA "<<sum<<endl;
+cout<<"Numero de Frames generados " << sum << endl;
 
 }
 
@@ -392,16 +391,17 @@ cout << "Meto el frame " << i << " en el chunk " << index << endl;
 // se repiten los frames de corte porque sino no se interpola entre los frames de indice 7 y 8.
 // se pushea al final el number of frames para que el indice del ultimo frame no se indefina en al funcion get_interval_index
 
-void generate_even_interval_indexes(vector<int> & interval_divider_indexes, int block_size, int numberOfFrames){
+void generate_even_interval_indexes(vector<int> & interval_divider_indexes, int block_size, int n_frames){
 
 	assert(block_size > 1 && "El block size tiene que ser de al menos 2 para poder interpolar entre los frames");
 
-	for (int i = block_size-1; i < numberOfFrames ; i+=block_size-1)
+	for (int i = block_size-1; i < n_frames ; i+=block_size-1)
 	{
 		interval_divider_indexes.push_back(i);
 	}
 
-	if( numberOfFrames % block_size != 0) interval_divider_indexes.push_back(numberOfFrames);
+	if(interval_divider_indexes.empty() || interval_divider_indexes.back() != n_frames)
+		interval_divider_indexes.push_back(n_frames);
 }
 
 void generate_ecm_interval_indexes(vector<Matrix> video_frames, vector<int> & interval_divider_indexes, double threshold){
@@ -413,4 +413,15 @@ void generate_ecm_interval_indexes(vector<Matrix> video_frames, vector<int> & in
 	}
 
 	interval_divider_indexes.push_back(video_frames.size());
+}
+
+vector<Matrix> merge_chunks(vector<vector<Matrix> > & generated_video_by_intervals){
+	vector<Matrix> res;
+	for (int i = 0; i < generated_video_by_intervals.size(); ++i)
+	{
+		for (int j = 0; j < generated_video_by_intervals[i].size(); ++j)
+			res.push_back(generated_video_by_intervals[i][j]);
+	}
+
+	return res;
 }
