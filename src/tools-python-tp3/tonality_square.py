@@ -1,24 +1,16 @@
 import numpy as np
 import sys
 
-def printCool(m, width, height):
-	for x in xrange(0,width):
-		for y in xrange(0,height):
-			print m[width][height],
-	print
+# Genera un video de un cuadrado todo el mismo colo
+# y frame a frame va a cambiando de color
 
 width = 240
 height = 240
-jump = 24 # 1 a 127
+jump = 1 # 1 a 127
 
-if(jump == 1):
-	print 255
-else:
-	print 255/jump
-
+print 255/jump
 print height, width
 print 24
-
 
 for x in xrange(0,256, jump):
 	actualColor = str(x)

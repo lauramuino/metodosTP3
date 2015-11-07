@@ -11,17 +11,18 @@ width = 100
 height = 100
 white = '255'
 black = '0'
+jump = 10
 
-print 900
+print (height/jump)*(width/jump)
 print height, width
-print 24
+print 16
 
 
 whiteMatrix = [[white for x in range(height)] for x in range(width)]
 actualFrame = whiteMatrix
 
-for y in xrange(0,91,10):
-	for x in xrange(0,90):
+for y in xrange(0,height,jump):
+	for x in xrange(0,width,jump):
 		for i in xrange(0,10):
 			for j in xrange(0,10):
 				actualFrame[x+i][y+j]=black
