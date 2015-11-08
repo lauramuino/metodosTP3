@@ -1,11 +1,27 @@
 \section{Introducción}
 
-El objetivo de este trabajo es crear un método que dado un video devuelva otro exactamente igual en cámara lenta. La técnica base que se utiliza para producir este efecto, es la de rellenar el video original con frames generados a partir de frames del mismo.\\
+El objetivo de este trabajo es mostrar distintos métodos para generar videos en cámara lenta, a partir de otros videos.
 
-Se utilizan tres métodos para generar los frames de relleno:
+
+Un video es una secuencia de imagenes, tambien llamados $frames$ o cuadros.  Las imagenes son matrices de pixeles (números que representan colores) y se muestran con una determinada velocidad de $frames$ por segundo (fps). Mientras más imagenes se muestren por segundo, mejor se ven los movimientos en el video, y mas fluidos.
+
+
+Para darle un aspecto de $slow$ $motion$ a un video (cámara lenta), lo que se hace es agregar $frames$ entre los $frames$ originales del video. Como se conservan los fps del video, esto hace que el video resultante dure mas y los movimientos se vean más lentos. 
+
+Si se agregaran $frames$ y se conservara la duración total del video, los fps incrementarían y el video se vería a la misma velocidad pero con movimientos mas fluidos y definidos.
+
+ Queremos que los $frames$ que se agregan tengan alguna relación con los $frames$ originales entre los que se encuentran, aparentando ser $frames$ tomados tambien por la cámara de video.
+
+Hay distintos métodos para generar los $frames$ que se van a agregar. Para este trabajo implementamos tres de ellos:
+
 \begin{itemize}
-\item Método del vecino más cercano, copia los pixeles del frame más cercano.
-\item Método de interpolación lineal, es el método de interpolación fragmentaria que utiliza polinomios lineales para aproximar los pixeles.
-\item Método de interpolación cúbica, al igual que la interpolación lineal, es fragmentaria, sin embargo utiliza polinomios cúbicos para aproximar los frames a generar.
+\item Método del vecino más cercano: Los nuevos cuadros son copias del cuadro original más cercano.
+\item Método de interpolación lineal, es el método de interpolación fragmentaria que utiliza polinomios lineales para aproximar los pixeles de los nuevos cuadros.
+\item Método de interpolación cúbica, al igual que la interpolación lineal, es fragmentaria, sin embargo utiliza polinomios cúbicos para aproximar los cuadros a generar.
 \end{itemize}
 
+ Cada uno de los métodos tiene sus ventajas y desventajas particulares. Analizaremos los resultados obtenidos con videos de prueba para poder compararlos entre ellos y ver en qué casos uno es mejor que el otro, y en qué casos los $frames$ resultantes no son buenos.
+
+ Para saber si los $frames$ generados se aproximan bien, se le quitan frames intermedios a los videos de entrada y con los métodos se generan esos mismos $frames$ que faltan. Luego comparamos los que generamos con los que quitamos del video original. Para compararlos usamos dos medidas: ECM (error cuadrático medio) y PSNR (del inglés Peak Signal-to-Noise Ratio).
+
+ También vamos a analizar cuándo se producen $artifacts$ (errores visuales en las imágenes del video) debido a la aplicación de nuestros métodos. 
