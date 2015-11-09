@@ -1,7 +1,9 @@
 //#include "mat.h"
 #include "aux.h"
 //#include "video.h"
+#include <chrono>
 
+	
 using namespace std;
 
 //VARIABLES GLOBALES
@@ -110,6 +112,7 @@ if(argc < 6){
 	cout << "Video dividido en intervalos" << endl;
 
 	//Para cada chunk de video, proceso ese pedazo
+	auto begin = std::chrono::high_resolution_clock::now();
 	for (int i = 0; i < video_by_intervals.size(); ++i){
 		vector<Matrix> generated_video_frames; // frames generados (sin los originales)
 		video_frames = video_by_intervals[i];
@@ -147,6 +150,9 @@ if(argc < 6){
 	
 	} //end for
 	
+	auto end = std::chrono::high_resolution_clock::now();
+	auto total_time = chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();
+	cout << "Tiempo total de ejecucion: " << total_time << endl;
 	// Si queremos, chequeamos el ECM y el PSNR de los frames interpolados contra los originales
 	if(check_contra_original == "true"){
 		// mergeamos todos los frames interpolados en un solo vector de frames (sin los originales)
