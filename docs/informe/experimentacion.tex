@@ -1,2 +1,54 @@
 \section{Experimentación}
-%Ponga aqui la experimentacion
+Los primeros dos experimentos que veremos, se centran en el tiempo de ejecución de los procesos. Dichos experimentos tienen como finalidad estudiar qué parámetros influyen en la complejidad de los algoritmos uitlizados y cómo lo hacen.\\
+
+Como video de prueba, utilizamos una escena de un partido de futbol donde hay gran cantidad de movimiento.\\
+
+En el primer experimento realizamos lo siguiente, medimos el tiempo de generación de frames aumentando en cada medición la cantidad de frames a generar (1, 2, 3...) en un video que, repetimos, en particular, tiene gran cantidad de movimiento. Los resultados fueron los siguientes:
+
+%grafico donde la cantidad de frames a generar aumenta
+% \begin{wrapfigure}{r}{0.6\textwidth}
+%   \vspace{-20pt}
+%   \begin{center}
+%     \includegraphics[scale= 0.6]{imagenes/.png}
+%   \end{center}
+%   \vspace{-10pt}
+%   \vspace{-10pt}
+% \end{wrapfigure}
+
+Como vemos en el gráfico *poner referencia*, el tiempo de procesamiento es lineal, esto es debido a que en cada iteración aumentamos la cantidad de frames a generar. Era de esperarse que un método como splines resultara ser el que más tarde en realizar su tarea, dada la complejidad de las operaciones que este realiza. \\
+
+Por otro lado, realizamos una medición de tiempos con el mismo video, donde la cantidad de frames a generar es fija al igual que las dimensiones de los frames, y lo que variamos fue la cantidad de frames del video de entrada, aumentándolo en cada medición. Lo que obtuvimos fue lo siguiente:
+
+%grafico donde la cantidad de frames del video de entrada aumenta
+% \begin{wrapfigure}{r}{0.6\textwidth}
+%   \vspace{-20pt}
+%   \begin{center}
+%     \includegraphics[scale= 0.6]{imagenes/.png}
+%   \end{center}
+%   \vspace{-10pt}
+%   \vspace{-10pt}
+% \end{wrapfigure}
+
+Los resultados que obtuvimos fueron lineales, como en el experimento anterior, con lo cual concluimos que la complejidad no depende únicamente de la cantidad de frames de entrada. \\
+
+Intuitivamente el tiempo de procesamiento para cada método no debería variar si el video de prueba tiene gran movimiento o no. En particular, el video de prueba del experimento anterior, tenía una escena donde habia mucho movimiento, y esto no se reflejó en la medición, con lo cual concluimos que el tiempo de procesamiento tampoco depende de las características visuales del video.\\
+
+
+Terminando con la medición de tiempos, pasamos a estudiar las mediciones con el error cuadrático medio (ECM). En el siguiente experimento, tomamos un video y le quitamos frames, para luego generarlos. Estudiamos como varía dicho índice comparando los frames originales que quitamos y los frames generados que los reemplazan. Los resultados que obtuvimos fueron los siguientes:
+
+
+%grafico de medicion de ecm con 
+% \begin{wrapfigure}{r}{0.6\textwidth}
+%   \vspace{-20pt}
+%   \begin{center}
+%     \includegraphics[scale= 0.6]{imagenes/.png}
+%   \end{center}
+%   \vspace{-10pt}
+%   \vspace{-10pt}
+% \end{wrapfigure}
+
+
+
+
+
+
