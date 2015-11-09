@@ -1,6 +1,6 @@
 \section{Desarrollo}
 
-Cada método aproxima cada pixel de los $frames$ nuevos utilizando los pixeles de los $frames$ originales del video, y lo hace utilizando alguna función matemática. 
+Cada método aproxima cada pixel de los $frames$ nuevos utilizando los pixeles de los $frames$ originales del video, y lo hace utilizando una función matemática. 
 Por ejemplo, para generar el valor del pixel en la posición (i,j) de un nuevo $frame$, se utilizan los valores de los pixeles de los frames originales en la misma posicion (i,j). 
 
 En el caso del método del vecino mas cercano hay solo dos valores posibles para un pixel. En los métodos lineal y cúbico ($splines$) se usan polinomios para hacer la aproximación.
@@ -11,7 +11,8 @@ El algoritmo es bastante simple, cada $frame$ a agregar es la copia exacta del $
 %%%%% imagen de toystory que explica el método e imagen de la funcion
 
 \subsection{Método de interpolación lineal}
-Se quiere aproximar con un polinomio de grado 1 (función lineal) los pixeles de los $frames$ que se agregan. Se utilizan como puntos conocidos del polinomio los valores del mismo pixel del $frame$ original anterior y posterior al que se genera.
+Se quiere aproximar con un polinomio de grado 1 (función lineal) los pixeles de los $frames$ que se agregan. Para estimar el valor del pixel $(i,j)$ en el nuevo frame, se utilizan los pixeles en la
+misma posición del $frame$ siguiente y del anterior para construir el polinomio interpolador.
 
 %%%%% imagen de la funcion que aproxima los puntos
 
@@ -25,11 +26,11 @@ En nuestro caso definimos los puntos $x_{0}, ... , x_{n-1}$ como el tiempo en qu
 \subsection{Interpolación cúbica o splines}
 %SUPONEMOS QUE LA CANTIDAD DE FRAMES TOTALES (ORIGINALES) ES N+1, PARA QUE LOS ÍNDICES QUEDEN BONITOS.
 
-Al igual que en el método de interpolación lineal, para las posiciones (i,j) de todos los frames del video, generamos los puntos intermedios a estos con splines, y asi generar las matrices de relleno posición a posición. Los puntos de interpolación $x_{0} .. x_{n}$ siguen representando el tiempo en el que cada frame es reproducido, esto está ligado al framerate del video original.\\
+Al igual que en el método de interpolación lineal, para las posiciones (i,j) de todos los frames del video, generamos los puntos intermedios a estos con splines, y asi generar las matrices de relleno posición a posición. Los $n+1$ puntos de interpolación $x_{0} .. x_{n}$ siguen representando el tiempo en el que cada frame es reproducido. Esto está ligado al framerate del video original.\\
 
-Para construir los n splines, se deben averiguar los valores de 4n constantes a, b, c y d, correspondientes a los coeficientes de cada uno de los polinomios, con lo que se tiene bastante flexibilidad para asegurar que los splines construidos no solo son continuos y diferenciables en su intervalo, sino que tienen derivada segunda continua.\\
+Para construir los $n$ splines, se deben averiguar los valores de $4n$ constantes $a$, $b$, $c$ y $d$, correspondientes a los coeficientes de cada uno de los polinomios, con lo que se tiene bastante flexibilidad para asegurar que los splines construidos no solo son continuos y diferenciables en su intervalo, sino que tienen derivada segunda continua.\\
 Primero recordaremos la definición de la interpolación cúbica por splines, para poder obtener propiedades a partir de ella: \\
-Dada una función f: [a, b] y un grupo de nodos $a= x_{0} < x_{1} < … < x_{n} = b$, una función interpolante cúbica S para f es una función que satisface las siguientes condiciones: \\
+Dada una función f: [a, b] y una sucesión de puntos $a= x_{0} < x_{1} < … < x_{n} = b$, una función interpolante cúbica S para f es una función que satisface las siguientes condiciones: \\
 
 \begin{enumerate}
 \item  S(x) es un polinomio de tercer grado, lo notamos como $S_{j}$ para el intervalo $[x_{j},x_{j+1}]$ $\forall j \in (0, n-1)$.
@@ -46,9 +47,9 @@ Dada una función f: [a, b] y un grupo de nodos $a= x_{0} < x_{1} < … < x_{n} 
 
 En general la segunda condición del punto f) provee una aproximación más precisa porque incluye más información, sin embargo requeire los valores de la derivada de f en los puntos de aproximación o una aproximación precisa de esos valores. Por esa razón, nos enfocaremos en realizar un spline natural.\\
 
-\newpage
 
 Construimos el spline aplicando las condiciones de la definición a los polinomios cúbicos\\ $S_{j}(x) = a_{j} + b_{j} (x - x_{j}) + c_{j} (x - x_{j})^{2} + d_{j} (x - x_{j})^{3}$ $\forall j \in (0, n-1)$.\\
+
 Como $S_{j}$ = $a_{j}$ = $f(x_{j})$, la condición c) puede ser aplicada para obtener $ a_{j+1} = S_{j+1}(x_{j+1}) = S_{j}(x_{j+1}) = a_{j} + b_{j} (x_{j+1} - x_{j}) + c_{j} (x_{j+1} - x_{j})^{2} + d_{j} (x_{j+1} - x_{j})^{3}$ $\forall j \in (0, n-2)$.\\
 
 Los términos $ x_{j+1} - x_{j} $ los renombraremos con la variable $h_{j}$ $\forall j \in (0, n-2)$ para mayor claridad. Si además llamamos $a_{n} = f(x_{n})$, entonces la ecuación
@@ -111,4 +112,4 @@ $\forall j \in (1, n-1)$. \\
 
 Las incógnitas de este sistema son los $\{c_{j}\}_{j=0}^{n}$. Los valores $\{ h_{j}\}_{j=0}^{n-1}$ y $\{ a_{j}\}_{j=0}^{n}$ están dados respectivamente por el espacio entre los puntos $\{x_{j}\}_{j=0}^{n}$ y los valores de f valuada en ellos. Una vez que los valores de $\{c_{j}\}_{j=0}^{n}$ son determinados, solo resta despejar $\{b_{j}\}_{j=0}^{n-1}$ de la ecuación \ref{eq:ecuacion3.20} y los $\{d_{j}\}_{j=0}^{n-1}$ de la ecuación \ref{eq:ecuacion3.17}. Con lo cual construimos los polinomios cúbicos $\{S_{j}(x)\}_{j=0}^{n-1}$. \\
 
-El sistema planteado para buscar los valores $\{c_{j}\}_{j=0}^{n}$ los encuentra y además son únicos. La prueba de esto está formalizada en el libro Burden.
+El sistema planteado para buscar los valores $\{c_{j}\}_{j=0}^{n}$ los encuentra y además son únicos. La prueba de esto está formalizada en [BUR9].
