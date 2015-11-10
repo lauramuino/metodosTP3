@@ -9,17 +9,17 @@ En el caso del método del vecino mas cercano hay solo dos valores posibles para
 El algoritmo es bastante simple, cada $frame$ a agregar es la copia exacta del $frame$ original más cercano. Siendo $n$ la cantidad de $frames$ a agregar, cuando $n$ es par, se copia el frame $i$, $n/2$ veces y luego se copia el frame $i+1$ otras $n/2$. 
 
 \begin{figure}[h!]
-  \caption{Vecinos mas cercanos, agregando 2 frames}
   \centering
     \includegraphics[width=0.5\textwidth]{imagenes/genCopypar.png}
+  \caption{Vecinos mas cercanos, agregando 2 frames}
 \end{figure}
 
 Cuando $n$ es impar, se copia el primer frame $n-1/2$ veces, y luego el resto de los frames se copia $n$ veces. Para el frame que está a igual distancia de los dos frames originales, utilizamos el frame posterior. No utilizamos ningún criterio en particular para esta decisión.
 
 \begin{figure}[h!]
-  \caption{Vecinos mas cercanos, agregando 3 frames}
   \centering
     \includegraphics[width=0.5\textwidth]{imagenes/genCopyImpar.png}
+  \caption{Vecinos mas cercanos, agregando 3 frames}
 \end{figure}
 
 En las figuras anteriores, los cuadros con línea punteada son los frames interpolados, mientras que los frames con línea sin puntear son los frames originales.
@@ -32,17 +32,17 @@ Si quisieramos agregar 2 frames nuevos, tomamos los valores del pixel en una pos
 
 
 \begin{figure}[h!]
-  \caption{Gráfico de los pixeles de los frames originales e interpolados}
   \centering
     \includegraphics[width=0.5\textwidth]{imagenes/linealFrames.png}
+  \caption{Gráfico de los pixeles de los frames originales e interpolados}
 \end{figure}
 
 Con los valores de esas posiciones construimos una función lineal para determinar los valores intermedios que deberán tomar pixeles de los $frames$ interpolados.
 
 \begin{figure}[h!]
-  \caption{Funcion lineal de acuerdo a los valores entre dos pixeles}
   \centering
     \includegraphics[width=0.5\textwidth]{imagenes/lineal2.png}
+  \caption{Funcion lineal de acuerdo a los valores entre dos pixeles}
 \end{figure}
 
 
