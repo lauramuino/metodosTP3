@@ -6,18 +6,50 @@ Por ejemplo, para generar el valor del pixel en la posición (i,j) de un nuevo $
 En el caso del método del vecino mas cercano hay solo dos valores posibles para un pixel. En los métodos lineal y cúbico ($splines$) se usan polinomios para hacer la aproximación.
 
 \subsection{Método del vecino más cercano}
-El algoritmo es bastante simple, cada $frame$ a agregar es la copia exacta del $frame$ original más cercano.\\
+El algoritmo es bastante simple, cada $frame$ a agregar es la copia exacta del $frame$ original más cercano. Siendo $n$ la cantidad de $frames$ a agregar, cuando $n$ es par, se copia el frame $i$, $n/2$ veces y luego se copia el frame $i+1$ otras $n/2$. 
 
-%%%%% imagen de toystory que explica el método e imagen de la funcion
+\begin{figure}[h!]
+  \caption{Vecinos mas cercanos, agregando 2 frames}
+  \centering
+    \includegraphics[width=0.5\textwidth]{imagenes/genCopypar.png}
+\end{figure}
+
+Cuando $n$ es impar, se copia el primer frame $n-1/2$ veces, y luego el resto de los frames se copia $n$ veces. Para el frame que está a igual distancia de los dos frames originales, utilizamos el frame posterior. No utilizamos ningún criterio en particular para esta decisión.
+
+\begin{figure}[h!]
+  \caption{Vecinos mas cercanos, agregando 3 frames}
+  \centering
+    \includegraphics[width=0.5\textwidth]{imagenes/genCopyImpar.png}
+\end{figure}
+
+En las figuras anteriores, los cuadros con línea punteada son los frames interpolados, mientras que los frames con línea sin puntear son los frames originales.
 
 \subsection{Método de interpolación lineal}
-Se quiere aproximar con un polinomio de grado 1 (función lineal) los pixeles de los $frames$ que se agregan. Para estimar el valor del pixel $(i,j)$ en el nuevo frame, se utilizan los pixeles en la
-misma posición del $frame$ siguiente y del anterior para construir el polinomio interpolador.
+Se quiere aproximar con un polinomio de grado 1 (función lineal) los pixeles de los $frames$ que se agregan. Para estimar el valor del pixel $(i,j)$ en los nuevos frames, se utilizan los pixeles en la
+misma posición $(i,j)$ de los $frames$ orginales anterior y posterior para construir el polinomio interpolador. \\
 
-%%%%% imagen de la funcion que aproxima los puntos
+Si quisieramos agregar 2 frames nuevos, tomamos los valores del pixel en una posición determinada de los frames originales, que en el siguiente gráfico corresponde a los colores rojo y violeta, y a partir de ellos construimos una función lineal para averiguar los valores de los pixeles de los nuevos $frames$ (los de color azul y verde).
+
+
+\begin{figure}[h!]
+  \caption{Gráfico de los pixeles de los frames originales e interpolados}
+  \centering
+    \includegraphics[width=0.5\textwidth]{imagenes/linealFrames.png}
+\end{figure}
+
+Con los valores de esas posiciones construimos una función lineal para determinar los valores intermedios que deberán tomar pixeles de los $frames$ interpolados.
+
+\begin{figure}[h!]
+  \caption{Funcion lineal de acuerdo a los valores entre dos pixeles}
+  \centering
+    \includegraphics[width=0.5\textwidth]{imagenes/lineal2.png}
+\end{figure}
+
 
 El método equivale a encontrar los n-1 polinomios de primer grado $S_{j}$ que pasan por los puntos distintos $(x_{j},f(x_{j}))$ y $(x_{j+1},f(x_{j+1}))$ $\forall j \in (0,n-2)$.\\
-En nuestro caso definimos los puntos $x_{0}, ... , x_{n-1}$ como el tiempo en que cada frame es reproducido, con lo cual son distintos. Los valores en cada $x_{j}$ equivalen al valor de un pixel del j-ésimo frame. Es decir, se generan para cada pixel (i,j) de los n frames, n-1 polinomios.\\
+En nuestro caso definimos los puntos $x_{0}, ... , x_{n-1}$ como el tiempo en que cada frame es reproducido. Por ejemplo, si tenemos un video a 24 fps, significa que en 1 segundo se muestran 24 frames. De este modo, sabemos que entre frame y frame hay una distancia temporal de 1/24 segundos. Estos son los valores que tomamos como los $x_{j}$ de nuestra función lineal. \\
+Luego, ese intervalo se divide en intervalos equidistantes de acuerdo a la cantidad de frames que vayamos a agregar. Los valores $f(x_{j})$ equivalen al valor de un pixel del j-ésimo frame. 
+%Es decir, se generan para cada pixel (i,j) de los n frames, n-1 polinomios.\\
 
 %%%%%%%% imagen de toystory que explica lineal
 
@@ -26,7 +58,7 @@ En nuestro caso definimos los puntos $x_{0}, ... , x_{n-1}$ como el tiempo en qu
 \subsection{Interpolación cúbica o splines}
 %SUPONEMOS QUE LA CANTIDAD DE FRAMES TOTALES (ORIGINALES) ES N+1, PARA QUE LOS ÍNDICES QUEDEN BONITOS.
 
-Al igual que en el método de interpolación lineal, para las posiciones (i,j) de todos los frames del video, generamos los puntos intermedios a estos con splines, y asi generar las matrices de relleno posición a posición. Los $n+1$ puntos de interpolación $x_{0} .. x_{n}$ siguen representando el tiempo en el que cada frame es reproducido. Esto está ligado al framerate del video original.\\
+Al igual que en el método de interpolación lineal, para las posiciones (i,j) de todos los frames del video, generamos los puntos intermedios a estos con splines, y asi generar las matrices de relleno posición a posición. Los $n+1$ puntos de interpolación $x_{0} .. x_{n}$ siguen representando el tiempo en el que cada frame es reproducido, dado por el framerate del video original.\\
 
 Para construir los $n$ splines, se deben averiguar los valores de $4n$ constantes $a$, $b$, $c$ y $d$, correspondientes a los coeficientes de cada uno de los polinomios, con lo que se tiene bastante flexibilidad para asegurar que los splines construidos no solo son continuos y diferenciables en su intervalo, sino que tienen derivada segunda continua.\\
 Primero recordaremos la definición de la interpolación cúbica por splines, para poder obtener propiedades a partir de ella: \\
@@ -45,7 +77,7 @@ Dada una función f: [a, b] y una sucesión de puntos $a= x_{0} < x_{1} < … < 
   \end{enumerate}
 \end{enumerate}
 
-En general la segunda condición del punto f) provee una aproximación más precisa porque incluye más información, sin embargo requeire los valores de la derivada de f en los puntos de aproximación o una aproximación precisa de esos valores. Por esa razón, nos enfocaremos en realizar un spline natural.\\
+En general la segunda condición del punto f) provee una aproximación más precisa porque incluye más información, sin embargo requeire los valores de la derivada de $f$ en los puntos de aproximación o una aproximación precisa de esos valores. Dado que no contamos con esta información, nos enfocamos en realizar un spline natural.\\
 
 
 Construimos el spline aplicando las condiciones de la definición a los polinomios cúbicos\\ $S_{j}(x) = a_{j} + b_{j} (x - x_{j}) + c_{j} (x - x_{j})^{2} + d_{j} (x - x_{j})^{3}$ $\forall j \in (0, n-1)$.\\
@@ -76,9 +108,7 @@ Despejando $d_{j}$ de la ecuación \ref{eq:ecuacion3.17} y reemplazando en las e
 \begin{equation} \label{eq:ecuacion3.18}
 a_{j+1} = a_{j} + b_{j} h_{j} + \frac{h_{j}^{2}}{3} (2c_{j} + c_{j+1})
 \end{equation}
-
-y
-
+\begin{center} y \end{center}
 \begin{equation} \label{eq:ecuacion3.19}
 b_{j+1} = b_{j} + h_{j} (c_{j} + c_{j+1})
 \end{equation}

@@ -30,7 +30,9 @@ Por otro lado, realizamos una medición de tiempos con el mismo video, donde la 
 
 Los resultados que obtuvimos fueron lineales, como en el experimento anterior, con lo cual concluimos que la complejidad no depende únicamente de la cantidad de frames a generar, sino también de la cantidad de frames de entrada.\\
 
+
 Intuitivamente el tiempo de procesamiento para cada método no debería variar si el video de prueba tiene gran movimiento o no, es decir, si hay mucha variacón del color de pixel entre frame y frame. Intuimos esto porque las operaciones que dependen del valor de un pixel son de tiempo constante (multiplicaciones, divisiones, sumas, restas y asignaciones). En particular, el video de prueba del experimento anterior, tenía una escena donde habia mucho movimiento, y esto no se reflejó en la medición temporal. \\
+
 Por otro lado, tomamos los tiempo de procesamiento para un video del mismo ancho y largo que el video anterior, donde todos los frames eran blancos (todos los pixeles valen 255) tomando en cada medicion la misma cantidad de frames para poder ver efectivamente si los tiempos obtenidos eran menores, mayores o iguales. Los resultados obtenidos fueron muy parecidos al otro video, por lo que decidimos graficarlo tomando los tiempos del video con movimiento dividido el tiempo del video en blanco.
 
 \begin{wrapfigure}{r}{0.6\textwidth}
