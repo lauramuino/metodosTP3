@@ -1,0 +1,63 @@
+TODO
+
+codigo
+
+limpiar
+readme de como se usa
+
+-------------------Informe
+
+
+
+intro: 
+imagenes de frames como ejemplo de los metodos.
+graficos de las funciones
+
+
+
+------------------Desarrollo:
+
+
+justificar correctitud con un ejemplo y los graficos de los polinomios
+
+agregar en el desarrollo de splines: que agregamos un parametro para 
+
+
+
+
+
+------------------Experimentacion	
+
+
+!!!!!!!!!!!!!!!!!!
+hacer grafico de error con el de mario y agregando muchos frames
+
+
+
+tonos de colores : un video que solo cambia tonos de colores, lo corrimos con splines y lineal agregando 5 frames nuevos. Los todos de colores intermedios dieron distintos!
+
+
+
+videos para experimentar
+https://www.youtube.com/watch?v=wycjnCCgUes
+
+que cambios hay cuando se cambian los bloques?
+
+hablar de los picos en el grafico de los polinomios cuando se parte el video en bloques
+
+artifacts:
+
+futbol
+
+cambio de camara (spline y lineal)
+
+movimiento brusco en vecino mas cercano
+
+mientras mas frames agregamos, peor es el de vecino porque hay mucho salto..
+
+cuadrado de cambio de tonalidad: ver si dan != colores lineal y splines
+
+
+mario:
+mencionar aca lo del video de tonalidad
+mencionar que mientras menor sea el fps mas fluido se ve el video, mientras que con bajo fps, el video se ve sidoso
