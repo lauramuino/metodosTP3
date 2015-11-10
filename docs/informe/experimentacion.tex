@@ -24,7 +24,7 @@ Por otro lado, realizamos una medición de tiempos con el mismo video, donde la 
 
 \begin{figure}[h!]
   \centering
-    \includegraphics[scale= 0.6]{imagenes/aumentandoFramesMessi.png}
+    \includegraphics[scale= 0.8]{imagenes/aumentandoFramesMessi.png}
   \caption{Tiempo de Procesamiento agregando 1 frame aumentando la cantidad de frames originales}
 \end{figure}
 
@@ -46,7 +46,38 @@ Por otro lado, tomamos los tiempo de procesamiento para un video del mismo ancho
 
 La mayor diferencia de tiempo entre ambos videos surgió en el método de splines. A pesar de no ser un tiempo significativamente distinto, creemos que la razón de que el tiempo sea ligeramente mayor en el video con movimiento radica en que los coeficientes de los polinomios obtenidos para el video en blanco son cero mientras que esto no sucede así para el otro video, haciendo que la evaluacion del polinomio sea más rápida.
 
-\subsection{Experimentación Cualitativa}
+
+
+\subsection{Analisis de errores visuales por la aplicacion de los metodos}
+Para esta sección utilizamos los siguiente videos:
+$Gangnam Style$ Video con cambios de cámara repentinos.
+$Messi$ Video con movimientos rápidos, sin cambios de cámara.
+$Mario$ Video del videojuego Super Mario Bros. Lo utilizamos por ser un video con movimientos rápidos, con el fin de poder observar diferencias visibles entre los métodos de interpolación.
+$Tonalidad$ Video de una suecesion de frames, donde cada frame es todo del mismo color, cambiando gradualmente de color, empezando desde el negro y terminando en el blanco. Lo utilizamos para ver las diferencias de colores generadas entre el método lineal y splines.
+
+
+Utilizamos este video para analizar los artifacts producidos por los cambios bruscos de camara. Tanto interpolacion lineal como interpolacion por splines dan resultados visualmente similares (salvo en el video del $Mario$), por lo tanto no distinguiremos entre uno y otro en este analisis.
+
+%gangman:
+\begin{figure}[h!]
+  \centering
+    \includegraphics[scale= 0.8]{imagenes/gangman.png}
+  \caption{Errores visuales por cambio de cámara}
+\end{figure}
+
+Como se puede ver en la Figura, el cambio brusco de camara genera frames intermedios no satisfactorios, donde parecería haber varios frames superpuestos y ligeramente corridos, mientras que con vecino más cercano no se ve este artifact, aunque obviamente se pierde cierta fluidez en el video en su totalidad.
+Una posible manera de subsanar este artifact sería calculando la diferencia entre 2 frames, y si es más alta que cierto threshold, se considera que hubo un cambio brusco de camara, y en vez de calcular el polinomio interpolador entre esos 2 frames, se utiliza vecino más cercano.
+
+%messi:
+No se pudieron apreciar diferencias significativas entre interpolacion lineal y splines. Ambos otorgan el mismo grado de fluidez al video.
+
+
+%mario:
+A diferencia de los casos anteriores, al aplicar los metodos de interpolación, observamos diferencias claras entre ambos métodos. En la interpolación con splines, se puede ver que en los frames generados queda una suerte de blur que no está presente en los frames generados por interpolación lineal (zonas marcadas en rojo), lo que nos da a entender que en la interpolación por splines se esta utilizando mas información de los frames anteriores para generar el nuevo frame, otorgando visualmente una mayor fluidez al video.
+También realizamos otro experimento (para el cual no agregamos imagenes ya que a simple vista no eran muy informativas de lo que estaba pasando) que consistió en un video generado por nosotros, el cual iba pasando por distintas tonalidades, empezando por el negro y aclarandose más hasta llegar al blanco. En este caso interpolación lineal y splines dieron diferentes, aunque fue una diferencia tan sutil que solo pudimos observarla comparando los valores de los pixeles con GIMP.
+
+
+\subsection{Experimentación PSNR}
 
 En esta sección analizamos las mediciones con el error cuadrático medio (ECM) y el Peak Signal to Noise Ratio (PSNR) y analizamos el impacto de los aspectos cualitativos de los vídeos en los métodos propuestos. \\
 
@@ -55,7 +86,7 @@ Los resultados que obtuvimos fueron los siguientes:
 
 
 \begin{figure}[h!]
-  \caption{Gráfico del ECM comparando contra frames originales}
+  \caption{Gráfico del PSNR comparando contra frames originales}
   \centering
     \includegraphics[scale=0.75]{imagenes/PSNRGangnam.png}
 \end{figure}
